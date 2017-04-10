@@ -5,13 +5,16 @@ LIBS = -lm
 
 OBJS = estructuras.o io.o main.o lax_wendoff.o
 INCL = estructuras.h io.h lax_wendoff.h inc.h
+OUTS = shock.dat
 
 
-all: $(EXEC)
+all: $(OUTS)
 
 .c.o:
 	$(CC) $(CC_OPTIONS) -c $<
 
+$(OUTS):$(EXEC)
+	./$(EXEC)
 
 $(EXEC):$(OBJS)
 	$(CC) $(OBJS) $(LIBS) -o $(EXEC)
