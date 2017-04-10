@@ -16,7 +16,8 @@ int main(){
 
 	I=1/dx+2;
 	u* U=u_malloc();
-	U=lax_wendoff(0.2, I);
+	U=lax_wendoff(0.12, I);
 	save(U, I);
+
 	return 0;
 }

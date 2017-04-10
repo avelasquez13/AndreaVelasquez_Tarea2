@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "estructuras.h"
+#include <string.h>
 
 void disp(u* U, int length)
 {
@@ -18,10 +19,9 @@ void disp(u* U, int length)
 void save(u* U, int length)
 {
 	   FILE *fp;
-	   fp = fopen("./data/shock2.txt", "w");
-
-	for (int i = 0; i < length+1 ; ++i) {
-		fprintf(fp,"%f %f %f\n", U[i].U1, U[i].U2, U[i].U3);
-	}
+	   fp = fopen("./data/dx05t12.txt", "w");
+	   for (int i = 0; i < length+1 ; ++i) {
+		   fprintf(fp,"%f %f %f\n", U[i].U1, U[i].U2, U[i].U3);
+	   }
 	   fclose(fp);
 }
