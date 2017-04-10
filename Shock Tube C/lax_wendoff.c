@@ -24,14 +24,18 @@ u* lax_wendoff(double tmax, int pI){
 
 	while(t<=tmax){
 		t=t+dt;
-		printf("Tiempo= %f\n",t);
+		printf("Tiempo= %f, dt= %f\n",t,dt);
 
 		U_n1=step(U_n, F_n, dt);
 		F_n=F(U_n1);
 		U_n=U_n1;
 
-		if (u_max(U_n)!=0){
-			dt=0.5/u_max(U_n)*dx;
+		double umax=u_max(U_n);
+		printf("vmax: %f\n",umax);
+		if (umax>1&&umax<10){
+
+			dt=0.5/umax*dx;
+			printf("Entro dt= %f",dt);
 		}
 
 
@@ -87,21 +91,21 @@ u* step(u* U_n, f* F_n, double dt){
 	}
 
 	//Reflexion en las fronteras
-	U_n1[0].U1=U_n1[1].U1;
+	/*U_n1[0].U1=U_n1[1].U1;
 	U_n1[0].U2=-U_n1[1].U2;
 	U_n1[0].U3=U_n1[1].U3;
 
 	U_n1[I-1].U1=U_n1[I-2].U1;
 	U_n1[I-1].U2=-U_n1[I-2].U2;
-	U_n1[I-1].U3=U_n1[I-2].U3;
+	U_n1[I-1].U3=U_n1[I-2].U3;*/
 
 	return U_n1;
 }
 
 double u_max(u* U){
-	double max=0;
+	double max=0.0;
 	for (i = 1; i < I-1; ++i) {
-		double vel= fabs(U[i].U2/U[i].U1);
+		double vel= U[i].U2/U[i].U1;
 		if(vel>max){
 			max=vel;
 		}

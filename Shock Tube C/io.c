@@ -19,7 +19,7 @@ void disp(u* U, int length)
 void save(u* U, int length)
 {
 	   FILE *fp;
-	   fp = fopen("./data/dx05t12.txt", "w");
+	   fp = fopen("./data/shock.dat", "w");
 	   for (int i = 0; i < length+1 ; ++i) {
 		   fprintf(fp,"%f %f %f\n", U[i].U1, U[i].U2, U[i].U3);
 	   }
