@@ -25,4 +25,4 @@ exec: $(OBJS)
 	$(CC) $(OBJS) $(LIBS) -o $(EXEC)
 
 clean:
-	rm -f $(OBJS) *~ core* ${EXEC} data/${INTER}
+	rm -f $(OBJS) *~ core* ${EXEC} ${INTER}
