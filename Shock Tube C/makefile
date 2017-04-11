@@ -5,19 +5,23 @@ LIBS = -lm
 
 OBJS = estructuras.o io.o main.o lax_wendoff.o
 INCL = estructuras.h io.h lax_wendoff.h inc.h
-OUTS = shock.dat
-
+INTER = shock.dat
+GRAPH = plotShock.py
+OUTS = u.png
 
 all: $(OUTS)
 
 .c.o:
 	$(CC) $(CC_OPTIONS) -c $<
 
-$(OUTS):$(EXEC)
+$(OUTS):$(INTER)
+	python $(GRAPH)
+
+$(INTER):$(EXEC)
 	./$(EXEC)
 
 $(EXEC):$(OBJS)
 	$(CC) $(OBJS) $(LIBS) -o $(EXEC)
 
 clean:
-	rm -f $(OBJS) *~ core* ${EXEC}
+	rm -f $(OBJS) *~ core* ${EXEC} ${INTER}
