@@ -15,27 +15,49 @@ int i;
 
 u* lax_wendoff(double tmax, int pI){
 	I=pI;
-	double dt=0.01;
+	double dt=0.001;
 	double t=0;
+	double umax;
 
-	u* U_n= init();
-	u* U_n1;
-	f* F_n=F(U_n);
-
-	while(t<=tmax){
+	u* U_n = init();
+	u* U_n_p = init();
+	u* U_n_m = init();
+	f* F_n = f_malloc();
+	F(F_n, U_n);
+	f* F_n_p = f_malloc();
+	F(F_n_p, U_n_p);
+	f* F_n_m = f_malloc();
+	F(F_n_m, U_n_m);
+	
+	while(t<tmax){
 		t=t+dt;
 		printf("Tiempo= %f, dt= %f\n",t,dt);
 
-		U_n1=step(U_n, F_n, dt);
-		F_n=F(U_n1);
-		U_n=U_n1;
+		for(i=1;i<I-1;i++){
+		  U_n_p[i].U1 = 0.5*(U_n[i+1].U1 + U_n[i].U1) - 0.5*(dt/dx)*(F_n[i+1].F1 - F_n[i].F1);
+		  U_n_p[i].U2 = 0.5*(U_n[i+1].U2 + U_n[i].U2) - 0.5*(dt/dx)*(F_n[i+1].F2 - F_n[i].F2);
+		  U_n_p[i].U3 = 0.5*(U_n[i+1].U3 + U_n[i].U3) - 0.5*(dt/dx)*(F_n[i+1].F3 - F_n[i].F3);
+		  U_n_m[i].U1 =0.5*(U_n[i].U1 + U_n[i-1].U1) - 0.5*(dt/dx)*(F_n[i].F1 - F_n[i-1].F1);
+		  U_n_m[i].U2 =0.5*(U_n[i].U2 + U_n[i-1].U2) - 0.5*(dt/dx)*(F_n[i].F2 - F_n[i-1].F2);
+		  U_n_m[i].U3 =0.5*(U_n[i].U3 + U_n[i-1].U3) - 0.5*(dt/dx)*(F_n[i].F3 - F_n[i-1].F3);
+		}
+		F(F_n_p,U_n_p);
+		F(F_n_m,U_n_m);
 
-		double umax=u_max(U_n);
+		for(i=1;i<I-1;i++){
+		  U_n[i].U1 = U_n[i].U1 - (dt/dx)*(F_n_p[i].F1 - F_n_m[i].F1);
+		  U_n[i].U2 = U_n[i].U2 - (dt/dx)*(F_n_p[i].F2 - F_n_m[i].F2);
+		  U_n[i].U3 = U_n[i].U3 - (dt/dx)*(F_n_p[i].F3 - F_n_m[i].F3);
+		}
+		F(F_n,U_n);
+
+		umax = u_max(U_n);
 		printf("vmax: %f\n",umax);
-		if (umax>1&&umax<100){
-
-			dt=0.5/umax*dx;
-			printf("Entro dt= %f\n",dt);
+		if (umax>1 && umax<100){
+		  dt=0.5*dx/umax;
+		  if (dt>0.01){
+		    dt = 0.01;
+		  }
 		}
 	}
 
@@ -60,55 +82,37 @@ u* init(void){
 	return U_0;
 }
 
-f* F(u* U_n){
-	f* F_n;
-
-	if(!(F_n = malloc(I*sizeof(f)))){
-	    fprintf(stderr, "Problem with data allocation\n");fflush(stdout);
-	    exit(0);
-	}
+void F(f* F_n, u* U_n){
+        double P;
 
 	for (i = 0; i < I; ++i) {
-		double P= 0.4*(U_n[i].U3-1/2*(U_n[i].U2*U_n[i].U2)/U_n[i].U1);
+		P= 0.4*(U_n[i].U3-1/2*(U_n[i].U2*U_n[i].U2)/U_n[i].U1);
 		F_n[i].F1= U_n[i].U2;
 		F_n[i].F2= (U_n[i].U2*U_n[i].U2)/U_n[i].U1+P;
 		F_n[i].F3= U_n[i].U2/U_n[i].U1*(U_n[i].U3+P);
 	}
-
-	return F_n;
-}
-
-u* step(u* U_n, f* F_n, double dt){
-	u* U_n1=u_malloc();
-
-	//Lax-Wendoff para todos los puntos intermedios
-	for (i = 1; i < I-1; ++i) {
-		U_n1[i].U1=	U_n[i].U1-dt/(2*dx)*(F_n[i+1].F1-F_n[i-1].F1)+1/4*(dt*dt)/(dx*dx)*((U_n[i+1].U1+U_n[i].U1)*(F_n[i+1].F1-F_n[i].F1)-(U_n[i].U1+U_n[i-1].U1)*(F_n[i].F1-F_n[i-1].F1));
-		U_n1[i].U2=	U_n[i].U2-dt/(2*dx)*(F_n[i+1].F2-F_n[i-1].F2)+1/4*(dt*dt)/(dx*dx)*((U_n[i+1].U2+U_n[i].U2)*(F_n[i+1].F2-F_n[i].F2)-(U_n[i].U2+U_n[i-1].U2)*(F_n[i].F2-F_n[i-1].F2));
-		U_n1[i].U3=	U_n[i].U3-dt/(2*dx)*(F_n[i+1].F3-F_n[i-1].F3)+1/4*(dt*dt)/(dx*dx)*((U_n[i+1].U3+U_n[i].U3)*(F_n[i+1].F3-F_n[i].F3)-(U_n[i].U3+U_n[i-1].U3)*(F_n[i].F3-F_n[i-1].F3));
-	}
-
-	//Reflexion en las fronteras
-	U_n1[0].U1=U_n1[1].U1;
-	U_n1[0].U2=-U_n1[1].U2;
-	U_n1[0].U3=U_n1[1].U3;
-
-	U_n1[I-1].U1=U_n1[I-2].U1;
-	U_n1[I-1].U2=-U_n1[I-2].U2;
-	U_n1[I-1].U3=U_n1[I-2].U3;
-
-	return U_n1;
 }
 
 double u_max(u* U){
 	double max=0.0;
-	for (i = 1; i < I-1; ++i) {
-		double vel= fabs(U[i].U2/U[i].U1);
+	double vel;
+	for (i = 0; i < I; i++) {
+		vel= fabs(U[i].U2/U[i].U1);
 		if(vel>max){
 			max=vel;
 		}
 	}
 	return max;
+}
+
+f* f_malloc(void){
+  f* F;
+  
+  if(!(F = malloc(I*sizeof(f)))){
+    fprintf(stderr, "Problem with data allocation\n");fflush(stdout);
+    exit(0);
+  }
+  else return F;
 }
 
 u* u_malloc(void){
