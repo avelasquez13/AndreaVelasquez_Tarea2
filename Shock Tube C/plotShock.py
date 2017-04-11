@@ -53,13 +53,11 @@ def SolucionExacta():
     p_c_antes = 0.3
     n = 0
     p_c = p_c_antes - fP(p_c_antes)/fP_prima(p_c_antes)
-    #    var = abs(p_c - p_c_antes)/(0.5*(abs(p_c) + abs(p_c_antes)))
     var = abs(fP(p_c))
     
     while (var > 1*(10.0**(-10))):
         p_c_antes = p_c
         p_c = p_c_antes - fP(p_c_antes)/fP_prima(p_c_antes)
-        #        var = abs(p_c - p_c_antes)/(0.5*(abs(p_c) + abs(p_c_antes)))
         var = abs(fP(p_c))
         n += 1
         
