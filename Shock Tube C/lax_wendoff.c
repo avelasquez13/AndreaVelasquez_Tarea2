@@ -32,10 +32,10 @@ u* lax_wendoff(double tmax, int pI){
 
 		double umax=u_max(U_n);
 		printf("vmax: %f\n",umax);
-		if (umax>1&&umax<10){
+		if (umax>1&&umax<100){
 
 			dt=0.5/umax*dx;
-			printf("Entro dt= %f",dt);
+			printf("Entro dt= %f\n",dt);
 		}
 	}
 
@@ -89,13 +89,13 @@ u* step(u* U_n, f* F_n, double dt){
 	}
 
 	//Reflexion en las fronteras
-	/*U_n1[0].U1=U_n1[1].U1;
+	U_n1[0].U1=U_n1[1].U1;
 	U_n1[0].U2=-U_n1[1].U2;
 	U_n1[0].U3=U_n1[1].U3;
 
 	U_n1[I-1].U1=U_n1[I-2].U1;
 	U_n1[I-1].U2=-U_n1[I-2].U2;
-	U_n1[I-1].U3=U_n1[I-2].U3;*/
+	U_n1[I-1].U3=U_n1[I-2].U3;
 
 	return U_n1;
 }

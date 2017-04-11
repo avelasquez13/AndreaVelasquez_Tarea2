@@ -2,7 +2,7 @@
  * main.c
  *
  *  Created on: Apr 9, 2017
- *      Author: felip
+ *      Author: felipe
  */
 #include <stdio.h>
 #include <stdlib.h>
