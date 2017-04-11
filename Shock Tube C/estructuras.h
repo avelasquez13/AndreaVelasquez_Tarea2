@@ -8,7 +8,7 @@
 #ifndef ESTRUCTURAS_H_
 #define ESTRUCTURAS_H_
 
-#define dx 0.05
+#define dx 0.002
 
 typedef struct U_str {
 
