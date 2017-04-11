@@ -70,13 +70,13 @@ u* init(void){
 	u* U_0=u_malloc();
 
 	for (i = 0; i < I/2; ++i) {
-		U_0[i].U1=1;
-		U_0[i].U2=0;
+		U_0[i].U1=1.0;
+		U_0[i].U2=0.0;
 		U_0[i].U3=1/0.4;
 	}
 	for (i = I/2; i < I; ++i) {
 		U_0[i].U1=0.125;
-		U_0[i].U2=0;
+		U_0[i].U2=0.0;
 		U_0[i].U3=0.1/0.4;
 	}
 	return U_0;
@@ -84,9 +84,8 @@ u* init(void){
 
 void F(f* F_n, u* U_n){
         double P;
-
 	for (i = 0; i < I; ++i) {
-		P= 0.4*(U_n[i].U3-1/2*(U_n[i].U2*U_n[i].U2)/U_n[i].U1);
+		P= 0.4*(U_n[i].U3-0.5*(U_n[i].U2*U_n[i].U2)/U_n[i].U1);
 		F_n[i].F1= U_n[i].U2;
 		F_n[i].F2= (U_n[i].U2*U_n[i].U2)/U_n[i].U1+P;
 		F_n[i].F3= U_n[i].U2/U_n[i].U1*(U_n[i].U3+P);
