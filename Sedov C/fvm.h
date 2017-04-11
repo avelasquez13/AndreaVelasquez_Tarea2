@@ -12,10 +12,10 @@ void evolve(physics_grid *P, U_grid *U, F_grid *F, double r_final);
 void step(physics_grid *P, U_grid *U, F_grid *F);
 void actualizarP(physics_grid *P, U_grid *U);
 void actualizarF(int eje, U_grid *U, F_grid *F);
-double radioChoque(U_grid *U);
-void h(U_grid *U, double* h);
-void cs(U_grid *U, double* cs);
-double vmax(U_grid *U, double* cs);
-double dt(U_grid *U, double* cs);
+double radioChoque(physics_grid *P);
+void h(physics_grid *P, double* h);
+void cs(physics_grid *P, double* cs);
+double vmax(physics_grid *P, double* cs);
+double dt(physics_grid *P, double* cs);
 
 #endif /* FVM_H_ */

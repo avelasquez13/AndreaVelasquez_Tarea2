@@ -40,7 +40,7 @@ void actualizarF(int eje, U_grid *U, F_grid *F){
 /**
  * Encuentra la posición de la onda de choque
  */
-double radioChoque(U_grid *U){
+double radioChoque(physics_grid *P){
 	//TODO
 	double r;
 
@@ -50,7 +50,7 @@ double radioChoque(U_grid *U){
 /**
  * Actualiza los valores de entalpía
  */
-void h(U_grid *U, double* h){
+void h(physics_grid *P, double* h){
 	//TODO
 
 }
@@ -58,7 +58,7 @@ void h(U_grid *U, double* h){
 /**
  * Actualiza los valores de cs
  */
-void cs(U_grid *U, double* cs){
+void cs(physics_grid *P, double* cs){
 	//TODO
 
 }
@@ -66,7 +66,7 @@ void cs(U_grid *U, double* cs){
 /**
  * Encuentra el valor de (u, v, ó w)+cs máximo
  */
-double vmax(U_grid *U, double* cs){
+double vmax(physics_grid *P, double* cs){
 	double vmax;
 
 	return vmax;
@@ -75,7 +75,7 @@ double vmax(U_grid *U, double* cs){
 /**
  * Encuentra el dt apropiado para las condiciones actuales
  */
-double dt(U_grid *U, double* cs){
+double dt(physics_grid *P, double* cs){
 	double dt;
 
 	return dt;
