@@ -33,7 +33,7 @@ void actualizarP(physics_grid *P, U_grid *U){
 /**
  * Actualiza los valores del F_grid con base en los valores del U_grid
  */
-void actualizarF(int eje, U_grid *U, F_grid *F){
+void actualizarF(int eje, U_grid *U, F_grid *Fp, F_grid *Fm){
 	//TODO
 }
 
@@ -68,7 +68,7 @@ void cs(physics_grid *P, double* cs){
  */
 double vmax(physics_grid *P, double* cs){
 	double vmax;
-
+	//TODO
 	return vmax;
 }
 
@@ -77,6 +77,6 @@ double vmax(physics_grid *P, double* cs){
  */
 double dt(physics_grid *P, double* cs){
 	double dt;
-
+	//TODO
 	return dt;
 }

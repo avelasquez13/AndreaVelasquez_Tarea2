@@ -25,6 +25,7 @@ int* coord(int pos){
 	//TODO (posiblemente no sea necesario)
 	int* coord;
 
+	return coord;
 }
 
 /**
@@ -33,4 +34,7 @@ int* coord(int pos){
  */
 int posF(int eje, int x, int y, int z){
 	//TODO
+	int pos;
+
+	return pos;
 }
