@@ -37,8 +37,6 @@ u* lax_wendoff(double tmax, int pI){
 			dt=0.5/umax*dx;
 			printf("Entro dt= %f",dt);
 		}
-
-
 	}
 
 	return U_n;
@@ -105,7 +103,7 @@ u* step(u* U_n, f* F_n, double dt){
 double u_max(u* U){
 	double max=0.0;
 	for (i = 1; i < I-1; ++i) {
-		double vel= U[i].U2/U[i].U1;
+		double vel= fabs(U[i].U2/U[i].U1);
 		if(vel>max){
 			max=vel;
 		}
