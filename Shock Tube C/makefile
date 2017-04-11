@@ -9,19 +9,20 @@ INTER = shock.dat
 GRAPH = plotShock.py
 OUTS = u.png
 
-all: $(OUTS)
+all: $(OBJS)
+
 
 .c.o:
 	$(CC) $(CC_OPTIONS) -c $<
 
-$(OUTS):$(INTER)
+plotshock:
 	python $(GRAPH)
 
-$(INTER):$(EXEC)
+shock:
 	./$(EXEC)
 
-$(EXEC):$(OBJS)
+exec:
 	$(CC) $(OBJS) $(LIBS) -o $(EXEC)
 
 clean:
-	rm -f $(OBJS) *~ core* ${EXEC} ${INTER}
+	rm -f $(OBJS) *~ core* ${EXEC} data/${INTER}
