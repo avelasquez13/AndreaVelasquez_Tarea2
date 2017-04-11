@@ -63,12 +63,12 @@ F_grid * create_F_grid(void){
 
 void init_problem(physics_grid *P, U_grid *U, F_grid *F, int problem){
   
-  P->L_x = 250.0;
-  P->L_y = 250.0;
-  P->L_z = 250.0;    
-  P->delta_x = 5.0;
-  P->delta_y = 5.0;
-  P->delta_z = 5.0;
+  P->L_x = 256.0;
+  P->L_y = 256.0;
+  P->L_z = 256.0;    
+  P->delta_x = 2.0;
+  P->delta_y = 2.0;
+  P->delta_z = 2.0;
   P->N_x = (int)(P->L_x/P->delta_x);
   P->N_y = (int)(P->L_y/P->delta_y);
   P->N_z = (int)(P->L_z/P->delta_z);
