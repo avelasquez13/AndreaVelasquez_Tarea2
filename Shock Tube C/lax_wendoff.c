@@ -69,7 +69,7 @@ f* F(u* U_n){
 	}
 
 	for (i = 0; i < I; ++i) {
-		double P= 0.4*(U_n[i].U3-1/2*(U_n[i].U2*U_n[i].U2)/U_n[i].U1);
+		double P= 0.4*(U_n[i].U3-0.5*(U_n[i].U2*U_n[i].U2)/U_n[i].U1);
 		F_n[i].F1= U_n[i].U2;
 		F_n[i].F2= (U_n[i].U2*U_n[i].U2)/U_n[i].U1+P;
 		F_n[i].F3= U_n[i].U2/U_n[i].U1*(U_n[i].U3+P);
