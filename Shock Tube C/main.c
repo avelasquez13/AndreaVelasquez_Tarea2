@@ -14,13 +14,9 @@ int I;
 
 int main(){
 
-	I=1/dx+2;
-	u* U;
-	if(!(U = malloc(I*sizeof(u)))){
-			    fprintf(stderr, "Problem with data allocation\n");fflush(stdout);
-			    exit(0);
-			}
-	U=lax_wendoff(0.22, I);
+	I=1/dx+1;
+	u* U=u_malloc();
+	U=lax_wendoff(0.23, I);
 	save(U, I);
 
 	return 0;
