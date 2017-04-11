@@ -11,7 +11,7 @@
 void evolve(physics_grid *P, U_grid *U, F_grid *F, double r_final);
 void step(physics_grid *P, U_grid *U, F_grid *Fp);
 void actualizarP(physics_grid *P, U_grid *U);
-void actualizarF(int eje, U_grid *U, F_grid *Fp, F_grid *Fm);
+void actualizarF(U_grid *U, F_grid *Fp, F_grid *Fm);
 double radioChoque(physics_grid *P);
 void h(physics_grid *P, double* h);
 void cs(physics_grid *P, double* cs);

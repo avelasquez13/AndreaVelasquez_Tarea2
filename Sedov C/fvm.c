@@ -33,7 +33,7 @@ void actualizarP(physics_grid *P, U_grid *U){
 /**
  * Actualiza los valores del F_grid con base en los valores del U_grid
  */
-void actualizarF(int eje, U_grid *U, F_grid *Fp, F_grid *Fm){
+void actualizarF(U_grid *U, F_grid *Fp, F_grid *Fm){
 	//TODO
 }
 
