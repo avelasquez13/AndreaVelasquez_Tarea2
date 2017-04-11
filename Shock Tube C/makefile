@@ -21,7 +21,7 @@ plotshock:
 shock:
 	./$(EXEC)
 
-exec:
+exec: $(OBJS)
 	$(CC) $(OBJS) $(LIBS) -o $(EXEC)
 
 clean:
