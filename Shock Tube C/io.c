@@ -21,7 +21,7 @@ void disp(u* U, int length)
 void save(u* U, int length)
 {
 	   FILE *fp;
-	   fp = fopen("./data/shock.dat", "w");
+	   fp = fopen("shock.dat", "w");
 	   for (i = 0; i < length ; ++i) {
 		   fprintf(fp,"%f %f %f\n", U[i].U1, U[i].U2, U[i].U3);
 	   }
