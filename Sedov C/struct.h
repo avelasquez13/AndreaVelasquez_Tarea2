@@ -3,7 +3,6 @@
 
 #define GAMMA 1.4
 
-#define SEDOV 1
 #define NDIM 3
 
 #define PRESSURE 0 

@@ -61,7 +61,7 @@ F_grid * create_F_grid(void){
 }
 
 
-void init_problem(physics_grid *P, U_grid *U, F_grid *F, int problem){
+void init_problem(physics_grid *P, U_grid *U, F_grid *F){
   
   P->L_x = 256.0;
   P->L_y = 256.0;

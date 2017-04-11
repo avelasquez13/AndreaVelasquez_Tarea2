@@ -13,7 +13,7 @@ int main(int argc, char **argv){
   U_state = create_U_grid();
   F_state = create_F_grid();
    
-  init_problem(P_state, U_state, F_state, SEDOV);
+  init_problem(P_state, U_state, F_state);
 
   print_L(P_state);
   
