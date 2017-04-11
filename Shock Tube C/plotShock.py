@@ -3,7 +3,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-data = np.loadtxt('data/shock.dat')
+data = np.loadtxt('shock.dat')
 
 U1, U2, U3 = data[1:-1,0], data[1:-1,1], data[1:-1,2]
 
