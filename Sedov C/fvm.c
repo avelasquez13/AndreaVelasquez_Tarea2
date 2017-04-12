@@ -80,3 +80,16 @@ double dt(physics_grid *P, double* cs){
 	//TODO
 	return dt;
 }
+
+/**
+ * Devuelve un vector con la propiedad deseada del physics_grid
+ * @param int propiedad toma los valores de las constnates:
+ * RHO= 0
+ * PRESSURE= 1
+ * VX= 2
+ * VY= 3
+ * VZ= 4
+ */
+double* propiedad(physics_grid *P, int propiedad){
+	//TODO
+}

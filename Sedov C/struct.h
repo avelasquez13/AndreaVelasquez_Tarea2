@@ -5,8 +5,8 @@
 
 #define NDIM 3
 
-#define PRESSURE 0 
-#define RHO 1
+#define RHO 0
+#define PRESSURE 1
 #define VX 2
 #define VY 3
 #define VZ 4
