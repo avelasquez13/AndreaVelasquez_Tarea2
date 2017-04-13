@@ -17,5 +17,6 @@ void h(physics_grid *P, double* h);
 void cs(physics_grid *P, double* cs);
 double vmax(physics_grid *P, double* cs);
 double dt(physics_grid *P, double* cs);
+double presion(double* u_cell);
 
 #endif /* FVM_H_ */
