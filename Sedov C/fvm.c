@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include "struct.h"
 #include "fvm.h"
+#include "space.h"
 
 /**
  * Calcula la evolución de la onda de choque hasta un r_final que entra por parametro
@@ -28,6 +29,44 @@ void step(physics_grid *P, U_grid *U, F_grid *F){
  */
 void actualizarP(physics_grid *P, U_grid *U){
 	//TODO
+        int val=0;
+	int x;
+	int y;
+	int z;
+	int pos;
+	for (pos=0;pos<P.N_cells;pos++){ // Densidad
+	  P.P[val*P.N_cells+pos] = U.U[pos];
+	}
+	val++;
+	// Falta calcular Presion
+	
+	val++;
+	for (z=0;z<P.N_z;z++){ // Vel x
+	  for (y=0;y<P.N_y;y++){
+	    for (x=0:x<P.N_x;x++){
+	      pos = pos(x,y,z,P.N_x,P.N_y);
+	      P.P[val*P.N_cells+pos] = U.U[(val-1)*P.N_cells+pos]/U.U[pos];
+	    }
+	  }
+	}
+	val++;
+	for (z=0;z<P.N_z;z++){ // Vel y
+	  for (y=0;y<P.N_y;y++){
+	    for (x=0:x<P.N_x;x++){
+	      pos = pos(x,y,z,P.N_x,P.N_y);
+	      P.P[val*P.N_cells+pos] = U.U[(val-1)*P.N_cells+pos]/U.U[pos];
+	    }
+	  }
+	}
+	val++;
+	for (z=0;z<P.N_z;z++){ // Vel z
+	  for (y=0;y<P.N_y;y++){
+	    for (x=0:x<P.N_x;x++){
+	      pos = pos(x,y,z,P.N_x,P.N_y);
+	      P.P[val*P.N_cells+pos] = U.U[(val-1)*P.N_cells+pos]/U.U[pos];
+	    }
+	  }
+	}
 }
 
 /**
