@@ -10,29 +10,28 @@
 
 /**
  * Retorna la posición en el arreglo del que corresponde a las coordenadas (x,y,z)
+ * Primero se recorre x, luego y, luego z
  */
-int pos(int x, int y, int z){
-	//TODO
+int pos(int x, int y, int z, int Nx, int Ny){
 	int pos;
-
+	pos = x + Nx*y + Nx*Ny*z;
 	return pos;
 }
 
 /**
  * Retorna las coordenadas que corresponden a la posicion  del arreglo pos.
  */
-int* coord(int pos){
-	//TODO (posiblemente no sea necesario)
-	int* coord;
-
-	return coord;
+void coord(int *coord, int pos, int Nx, int Ny){
+	coord[2] = pos/(Nx*Ny);
+	coord[1] = (pos - Nx*Ny*coord[2])/Nx;
+	coord[0] = (pos - Nx*Ny*coord[2] - Nx*coord[1]);
 }
 
 /**
  * Retorna la posición en el arreglo de F que corresponde a las coordenadas (x,y,z) y el eje que entra por parametro
  * @param eje=0 para Fx, eje=1 para Fy, eje=2 para Fz
  */
-int posF(int eje, int x, int y, int z){
+int posF(int eje, int x, int y, int z, int Nx, int Ny){
 	//TODO
 	int pos;
 
