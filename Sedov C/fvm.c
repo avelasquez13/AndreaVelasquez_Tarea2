@@ -34,6 +34,9 @@ void actualizarP(physics_grid *P, U_grid *U){
 	int y;
 	int z;
 	int pos;
+	int i;
+	double p;
+	double u[5];
 	for (pos=0;pos<P.N_cells;pos++){ // Densidad
 	  P.P[val*P.N_cells+pos] = U.U[pos];
 	}
@@ -43,7 +46,11 @@ void actualizarP(physics_grid *P, U_grid *U){
 	  for (y=0;y<P.N_y;y++){
 	    for (x=0:x<P.N_x;x++){
 	      pos = pos(x,y,z,P.N_x,P.N_y);
-	      P.P[val*P.N_cells+pos] = (GAMMA - 1)*(U.U[4*P.N_cells+pos] - 0.5*(U.U[1*P.N_cells+pos]*U.U[1*P.N_cells+pos] + U.U[2*P.N_cells+pos]*U.U[2*P.N_cells+pos] + U.U[3*P.N_cells+pos]*U.U[3*P.N_cells+pos])/U.U[pos]);
+	      for (i=0;i<5;i++){
+		u[i] = U.U[i*P.N_cells+pos];
+	      }
+	      p = presion(u);
+	      P.P[val*P.N_cells+pos] = p;
 	    }
 	  }
 	}
@@ -84,6 +91,45 @@ void actualizarP(physics_grid *P, U_grid *U){
  */
 void actualizarF(U_grid *U, F_grid *Fp, F_grid *Fm){
 	//TODO
+        int x, y, z, eje, val, i, pos, posf;
+	double u_celda[5], u_sig[5], u_ant[5], p;
+	for (z=1;z<U.N_z-1;z++){ // rho*vel
+	  for (y=1;y<U.N_y-1;y++){
+	    for (x=1:x<U.N_x-1;x++){
+	      pos = pos(x,y,z,U.N_x,U.N_y);
+	      u_celda = {U.U[0*U.N_cells+pos], U.U[1*U.N_cells+pos], U.U[2*U.N_cells+pos], U.U[3*U.N_cells+pos], U.U[4*U.N_cells+pos]};
+	      
+	      pos = pos(x+1,y,z,U.N_x,U.N_y); // Avanza en x
+	      u_sig = {U.U[0*U.N_cells+pos], U.U[1*U.N_cells+pos], U.U[2*U.N_cells+pos], U.U[3*U.N_cells+pos], U.U[4*U.N_cells+pos]};
+
+	      pos = pos(x-1,y,z,U.N_x,U.N_y); // Retrocede en x
+	      u_ant = {U.U[0*U.N_cells+pos], U.U[1*U.N_cells+pos], U.U[2*U.N_cells+pos], U.U[3*U.N_cells+pos], U.U[4*U.N_cells+pos]};
+
+	      for (i=0;i<5;i++){ // Promedio backward y forward
+		u_ant[i] = 0.5*(u_celda[i] + u_ant[i]);
+		u_sig[i] = 0.5*(u_celda[i] + u_sig[i]);
+	      }
+
+	      eje = 0; // Fpx
+	      val = 0; // Fpx 0
+	      posf = posF(x,y,z,eje,val,U.N_x,U.N_y,U.N_z);
+	      Fp[posF] = u_sig[1];
+	      val = 1; // Fpx 1
+	      p = presion(u_sig);
+	      posf = posF(x,y,z,eje,val,U.N_x,U.N_y,U.N_z);
+	      Fp[posf] = u_sig[1]*u_sig[1]/u_sig[0] + p;
+	      val = 2; // Fpx 2
+	      posf = posF(x,y,z,eje,val,U.N_x,U.N_y,U.N_z);
+	      Fp[posf] = u_sig[1]*u_sig[2]/u_sig[0];
+	      val = 3; // Fpx 3
+	      posf = posF(x,y,z,eje,val,U.N_x,U.N_y,U.N_z);
+	      Fp[posf] = u_sig[1]*u_sig[3]/u_sig[0];
+	      val = 4; // Fpx 4
+	      posf = posF(x,y,z,eje,val,U.N_x,U.N_y,U.N_z);
+	      Fp[posf] = u_sig[1]*u_sig[4]/u_sig[0] + p*u_sig[1]/u_sig[0];
+	    }
+	  }
+	}
 }
 
 /**
@@ -141,4 +187,13 @@ double dt(physics_grid *P, double* cs){
  */
 double* propiedad(physics_grid *P, int propiedad){
 	//TODO
+}
+
+/**
+ * Devuelve la presion en una celda dado como parametro u en esa celda
+ */
+double presion(double *u_cell){
+        double p;
+	p = (GAMMA - 1)*(u_cell[4] - 0.5*(u_cell[1]*u_cell[1] + u_cell[2]*u_cell[2] + u_cell[3]*u_cell[3])/u_cell[0]);
+	return p;
 }
