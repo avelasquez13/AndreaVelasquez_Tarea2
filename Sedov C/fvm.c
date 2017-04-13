@@ -37,9 +37,17 @@ void actualizarP(physics_grid *P, U_grid *U){
 	for (pos=0;pos<P.N_cells;pos++){ // Densidad
 	  P.P[val*P.N_cells+pos] = U.U[pos];
 	}
+
 	val++;
-	// Falta calcular Presion
-	
+	for (z=0;z<P.N_z;z++){ // Presion
+	  for (y=0;y<P.N_y;y++){
+	    for (x=0:x<P.N_x;x++){
+	      pos = pos(x,y,z,P.N_x,P.N_y);
+	      P.P[val*P.N_cells+pos] = (GAMMA - 1)*(U.U[4*P.N_cells+pos] - 0.5*(U.U[1*P.N_cells+pos]*U.U[1*P.N_cells+pos] + U.U[2*P.N_cells+pos]*U.U[2*P.N_cells+pos] + U.U[3*P.N_cells+pos]*U.U[3*P.N_cells+pos])/U.U[pos]);
+	    }
+	  }
+	}
+
 	val++;
 	for (z=0;z<P.N_z;z++){ // Vel x
 	  for (y=0;y<P.N_y;y++){
@@ -49,6 +57,7 @@ void actualizarP(physics_grid *P, U_grid *U){
 	    }
 	  }
 	}
+
 	val++;
 	for (z=0;z<P.N_z;z++){ // Vel y
 	  for (y=0;y<P.N_y;y++){
@@ -58,6 +67,7 @@ void actualizarP(physics_grid *P, U_grid *U){
 	    }
 	  }
 	}
+
 	val++;
 	for (z=0;z<P.N_z;z++){ // Vel z
 	  for (y=0;y<P.N_y;y++){
