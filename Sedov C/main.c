@@ -8,6 +8,8 @@ int main(int argc, char **argv){
   physics_grid * P_state;
   U_grid * U_state;
   F_grid  *Fp, *Fm;
+  double *radios; // radios[i] = radio de la celda en posiciones[i]
+  int *posiciones; // Guarda las posiciones ordenadas ascendentemente por radio
 
   P_state = create_physics_grid();
   U_state = create_U_grid();
