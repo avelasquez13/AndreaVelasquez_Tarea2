@@ -2,6 +2,7 @@
 #include <stdio.h>
 
 #define fname "sedov.dat"
+#define ft "tiempo.dat"
 
 void print_L(physics_grid *G){
   fprintf(stdout, "L_x = %f\n", G->L_x);  
@@ -18,5 +19,14 @@ void print_list(double *list, int length){
     fprintf(fp,"%f ",list[i]);
   }
   fprintf(fp,"\n");
+  fclose(fp);
+}
+
+void print_time(double tiempo){
+  FILE *fp;
+  fp = fopen(ft, "a");
+  
+  fprintf(fp,"%f\n",tiempo);
+  
   fclose(fp);
 }
