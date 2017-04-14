@@ -17,7 +17,7 @@ physics_grid * create_physics_grid(void){
     fprintf(stderr, "Problem with data allocation\n");fflush(stdout);
     exit(0);
   } 
-  
+  //TODO Falta definir los parametros de la malla
   G->L_x=0.0;
   G->L_y=0.0;
   G->L_z=0.0;
@@ -115,9 +115,12 @@ void init_problem(physics_grid *P, U_grid *U, F_grid *F_p, F_grid *F_m){
   init_to_zero(F_m->F, F_m->N_cells * NDIM * (NDIM +2));
 }
 
+/**
+ * Inicializa la lista de radios de las celdas y la lista de posiciones ordenada por radio ascendente
+ */
 int init_radios(physics_grid *P, double *radios, double *dist, double *rho, int *posiciones){
   int i, x, y, z, pos, length;
-  double rad_cuadrado;
+  double rad_cuadrados;
   if(!(radios = malloc(P->N_cells*sizeof(FLOAT)))){
     fprintf(stderr, "Problem with F allocation");
     exit(1);
@@ -138,13 +141,13 @@ int init_radios(physics_grid *P, double *radios, double *dist, double *rho, int 
     exit(1);
   }
 
-  for (z=0;z<P.N_z;z++){ // Guarda radio para cada posicion
-    for (y=0;y<P.N_y;y++){
-      for (x=0;x<P.N_x;x++){
-	pos = x + P.N_x*y + P.N_x*P.N_y*z;
-	posiciones[pos] = pos;
-	rad_cuadrados = ((x+0.5)*P.delta_x - 0.5*P.L_x)*((x+0.5)*P.delta_x - 0.5*P.L_x) + ((y+0.5)*P.delta_y - 0.5*P.L_y)*((y+0.5)*P.delta_y - 0.5*P.L_y) + ((z+0.5)*P.delta_z - 0.5*P.L_z)*((z+0.5)*P.delta_z - 0.5*P.L_z);
-	radios[pos] = sqrt(rad_cuadrados);
+  for (z=0;z<P->N_z;z++){ // Guarda radio para cada posicion
+    for (y=0;y<P->N_y;y++){
+      for (x=0;x<P->N_x;x++){
+    	  pos = x + P->N_x*y + P->N_x*P->N_y*z;
+    	  posiciones[pos] = pos;
+    	  rad_cuadrados = ((x+0.5)*P->delta_x - 0.5*P->L_x)*((x+0.5)*P->delta_x - 0.5*P->L_x) + ((y+0.5)*P->delta_y - 0.5*P->L_y)*((y+0.5)*P->delta_y - 0.5*P->L_y) + ((z+0.5)*P->delta_z - 0.5*P->L_z)*((z+0.5)*P->delta_z - 0.5*P->L_z);
+    	  radios[pos] = sqrt(rad_cuadrados);
       }
     }
   }
@@ -154,11 +157,11 @@ int init_radios(physics_grid *P, double *radios, double *dist, double *rho, int 
   pos = 1;
   dist [0] = radios[0];
   length = 1;
-  for (i=1;i<P.N_cells/8;i++){ // Recorre dist para llenarlo
-    while (dist[i-1] == radios[pos-1] && pos<P.N_cells){ // Busca cambio en radios
+  for (i=1;i<P->N_cells/8;i++){ // Recorre dist para llenarlo
+    while (dist[i-1] == radios[pos-1] && pos<P->N_cells){ // Busca cambio en radios
       pos++;
     }
-    if (pos<P.N_cells){ // Si sigue en una celda valida asigna dist
+    if (pos<P->N_cells){ // Si sigue en una celda valida asigna dist
       dist[i] = radios[pos-1];
       length = i+1;
     }
@@ -166,12 +169,12 @@ int init_radios(physics_grid *P, double *radios, double *dist, double *rho, int 
       dist[i] = -1;
     }
   }
-  return length
+  return length;
 }
 
 /**
  * Inicializa las condiciones iniciales de la explosion
  */
 void init_conditions(U_grid *U){
-  // TODO condiciones iniciales
+  // TODO falta definir las condiciones iniciales
 }

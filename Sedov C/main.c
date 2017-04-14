@@ -11,9 +11,10 @@ int main(int argc, char **argv){
   F_grid  *Fp, *Fm;
   double *radios; // radios[i] = radio de la celda en posiciones[i]
   double *dist, *rho; // Guardan valores de distancia (sin repetir) y promedio de rho a esa distancia
-  double tiempo = 0;
+  double tiempo;
   int *posiciones; // Guarda las posiciones ordenadas ascendentemente por radio
   int length; // Tamaño del SET de radios
+  int i;
 
   P_state = create_physics_grid();
   U_state = create_U_grid();
@@ -25,15 +26,16 @@ int main(int argc, char **argv){
 
   init_conditions(U_state);
 
-  print_list(dist,length);
-  tiempo = evolve(P_state, U_state, Fp, Fm, 10, radios, rho, dist, posiciones, length, tiempo);
-  print_list(rho,length);
+  print_list(dist,length);//Imprime radios?
 
-  tiempo = evolve(P_state, U_state, Fp, Fm, 60, radios, rho, dist, posiciones, length, tiempo);
-  print_list(rho,length);
+  //Imprime los valores de rho para las posiciones de la onda de choque 10m,60m, y 120m
+  double pos[3]={10,60,120};
+  for (i=0;i<3;i++){
+	  tiempo = evolve(P_state, U_state, Fp, Fm, pos[i], radios, rho, dist, posiciones, length);
+	  print_list(rho,length);
+  }
 
-  tiempo = evolve(P_state, U_state, Fp, Fm, 120, radios, rho, dist, posiciones, length, tiempo);
-  print_list(rho,length);
+
   print_L(P_state); // Supongo que esta linea sobra
   
   return 0;
