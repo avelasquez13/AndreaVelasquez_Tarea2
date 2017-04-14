@@ -115,8 +115,8 @@ void init_problem(physics_grid *P, U_grid *U, F_grid *F_p, F_grid *F_m){
   init_to_zero(F_m->F, F_m->N_cells * NDIM * (NDIM +2));
 }
 
-void init_radios(physics_grid *P, double *radios, double *dist, double *rho, int *posiciones, int length){
-  int i, x, y, z, pos;
+int init_radios(physics_grid *P, double *radios, double *dist, double *rho, int *posiciones){
+  int i, x, y, z, pos, length;
   double rad_cuadrado;
   if(!(radios = malloc(P->N_cells*sizeof(FLOAT)))){
     fprintf(stderr, "Problem with F allocation");
@@ -166,4 +166,5 @@ void init_radios(physics_grid *P, double *radios, double *dist, double *rho, int
       dist[i] = -1;
     }
   }
+  return length
 }

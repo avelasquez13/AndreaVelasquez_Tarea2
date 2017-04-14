@@ -21,7 +21,7 @@ int main(int argc, char **argv){
   Fm = create_F_grid();
    
   init_problem(P_state, U_state, Fp, Fm);
-  init_radios(P_state, radios, dist, rho, posiciones, length);
+  length = init_radios(P_state, radios, dist, rho, posiciones);
 
   // TODO Falta init condiciones iniciales
 
