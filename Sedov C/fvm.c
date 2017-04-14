@@ -14,16 +14,14 @@
  * Calcula la evolución de la onda de choque hasta un r_final que entra por parametro
  *
  */
-void evolve(physics_grid *P, U_grid *U, F_grid *Fp, F_grid *Fm, double r_final, double *radios, int *posiciones){
-	//TODO
-
+double evolve(physics_grid *P, U_grid *U, F_grid *Fp, F_grid *Fm, double r_final, double *radios, int *posiciones, double tiempo){
         double radio, tiempo;
 	radio = radioChoque(P,radios,posiciones);
-	tiempo = 0;
 	while(radio<r_final){
 	  tiempo = step(P,U,Fp,Fm,tiempo);
 	  radio = radioChoque(P);
 	}
+	return tiempo
 }
 
 /**
@@ -269,38 +267,29 @@ void actualizarF(U_grid *U, F_grid *Fp, F_grid *Fm){
 /**
  * Encuentra la posición de la onda de choque
  */
-double radioChoque(physics_grid *P, double *radios, int *posiciones){
-	double r, der, dermax, *dens, *pres, *dist;
+double radioChoque(physics_grid *P, double *radios, double *rho, double *dist, int *posiciones, int length){
+	double r, der, dermax, *pres;
 	int i, max;
 
-	if(!(dens = malloc((P.N_cells/8)*sizeof(double)))){
-	  fprintf(stderr, "Problem with data allocation\n");fflush(stdout);
-	  exit(0);
-	}
 	if(!(pres = malloc((P.N_cells/8)*sizeof(double)))){
 	  fprintf(stderr, "Problem with data allocation\n");fflush(stdout);
 	  exit(0);
 	}
-	if(!(dist = malloc((P.N_cells/8)*sizeof(double)))){
-	  fprintf(stderr, "Problem with data allocation\n");fflush(stdout);
-	  exit(0);
-	}
 
-	perfilRadial(P,radios,posiciones,dens,pres,dist);
+	perfilRadial(P,radios,posiciones,length,dens,pres,dist);
 
 	dermax = 0;
-	for (i=1;i<P.N_cells/8;i++){
+	for (i=1;i<length;i++){
 	  der = 0;
-	  if (dist[i] != -1){
-	    der = (pres[i] - pres[i-1])/(dist[i] - dist[i-1]);
-	  }
+	  der = (pres[i] - pres[i-1])/(dist[i] - dist[i-1]);
 	  if (dermax<der){
 	    dermax = der;
 	    max = i;
 	  }
 	}
+	free(pres);
 
-	r = dist[max]
+	r = dist[max];
 	return r;
 }
 
@@ -399,8 +388,7 @@ double presion(double *u_cell){
 /**
  * Evalua y produce una lista de promedio radial de densidad y presion
  */
-void perfilRadial(physics_grid *P, double *radios, int *posiciones, double *dens, double *pres, double *dist){
-	return p;
+void perfilRadial(physics_grid *P, double *radios, int *posiciones, int length, double *dens, double *pres, double *dist){
 	int i, j, pos, num;
 	double dens_m, pres_m, *dens_ord, *pres_ord;
 
@@ -419,7 +407,7 @@ void perfilRadial(physics_grid *P, double *radios, int *posiciones, double *dens
 	}
 
 	pos = 0;
-	for (j=0;j<(P.N_cells/8);j++){ // Listas de promedios radiales
+	for (j=0;j<length;j++){ // Listas de promedios radiales
 	  dens_m = pres_m = 0;
 	  if (pos<P.N_cells){
 	    dens_m += dens_ord[pos];
@@ -436,10 +424,8 @@ void perfilRadial(physics_grid *P, double *radios, int *posiciones, double *dens
 
 	  dens[j] = dens_m/i;
 	  pres[j] = pres_m/i;
-	  dist[j] = -1;
-	  if (pos<P.N_cells){
-	    dist[j] = radios[pos];
-	  }
 	  pos++;
 	}
+	free(dens_ord);
+	free(pres_ord);
 }
