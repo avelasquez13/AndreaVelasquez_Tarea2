@@ -115,8 +115,8 @@ void init_problem(physics_grid *P, U_grid *U, F_grid *F_p, F_grid *F_m){
   init_to_zero(F_m->F, F_m->N_cells * NDIM * (NDIM +2));
 }
 
-void init_radios(physics_grid *P, double *radios, int *posiciones){
-  int x, y, z, pos;
+void init_radios(physics_grid *P, double *radios, double *dist, double *rho, int *posiciones, int length){
+  int i, x, y, z, pos;
   double rad_cuadrado;
   if(!(radios = malloc(P->N_cells*sizeof(FLOAT)))){
     fprintf(stderr, "Problem with F allocation");
@@ -124,6 +124,16 @@ void init_radios(physics_grid *P, double *radios, int *posiciones){
   }
 
   if(!(posiciones = malloc(P->N_cells*sizeof(int)))){
+    fprintf(stderr, "Problem with F allocation");
+    exit(1);
+  }
+
+  if(!(dist = malloc((P->N_cells/8)*sizeof(int)))){
+    fprintf(stderr, "Problem with F allocation");
+    exit(1);
+  }
+
+  if(!(rho = malloc((P->N_cells/8)*sizeof(int)))){
     fprintf(stderr, "Problem with F allocation");
     exit(1);
   }
@@ -140,4 +150,20 @@ void init_radios(physics_grid *P, double *radios, int *posiciones){
   }
 
   // TODO: algoritmo para ordenar radios y con eso ordenar ordenar correspondientemente posiciones
+
+  pos = 1;
+  dist [0] = radios[0];
+  length = 1;
+  for (i=1;i<P.N_cells/8;i++){ // Recorre dist para llenarlo
+    while (dist[i-1] == radios[pos-1] && pos<P.N_cells){ // Busca cambio en radios
+      pos++;
+    }
+    if (pos<P.N_cells){ // Si sigue en una celda valida asigna dist
+      dist[i] = radios[pos-1];
+      length = i+1;
+    }
+    else{ // Ya recorrio radios, los valores que quedan de la lista dist sobran
+      dist[i] = -1;
+    }
+  }
 }
