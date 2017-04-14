@@ -61,7 +61,7 @@ F_grid * create_F_grid(void){
 }
 
 
-void init_problem(physics_grid *P, U_grid *U, F_grid *F){
+void init_problem(physics_grid *P, U_grid *U, F_grid *F_p, F_grid *F_m){
   
   P->L_x = 256.0;
   P->L_y = 256.0;
@@ -79,11 +79,16 @@ void init_problem(physics_grid *P, U_grid *U, F_grid *F){
   U->N_z = P->N_z;
   U->N_cells = P->N_cells;
   
-  F->N_x = P->N_x;
-  F->N_y = P->N_y;
-  F->N_z = P->N_z;
-  F->N_cells = P->N_cells;
-  
+  F_p->N_x = P->N_x;
+  F_p->N_y = P->N_y;
+  F_p->N_z = P->N_z;
+  F_p->N_cells = P->N_cells;
+
+  F_m->N_x = P->N_x;
+  F_m->N_y = P->N_y;
+  F_m->N_z = P->N_z;
+  F_m->N_cells = P->N_cells;
+
   if(!(P->P = malloc(P->N_cells * (NDIM +2) * sizeof(FLOAT)))){
     fprintf(stderr, "Problem with pressure allocation");
     exit(1);
@@ -96,9 +101,15 @@ void init_problem(physics_grid *P, U_grid *U, F_grid *F){
   }
   init_to_zero(U->U, U->N_cells * (NDIM +2));
   
-  if(!(F->F = malloc(F->N_cells * (NDIM) * (NDIM + 2) * sizeof(FLOAT)))){
+  if(!(F_p->F = malloc(F_p->N_cells * (NDIM) * (NDIM + 2) * sizeof(FLOAT)))){
     fprintf(stderr, "Problem with F allocation");
     exit(1);
   }
-  init_to_zero(F->F, F->N_cells * NDIM * (NDIM +2));
+  init_to_zero(F_p->F, F_p->N_cells * NDIM * (NDIM +2));
+
+  if(!(F_m->F = malloc(F_m->N_cells * (NDIM) * (NDIM + 2) * sizeof(FLOAT)))){
+    fprintf(stderr, "Problem with F allocation");
+    exit(1);
+  }
+  init_to_zero(F_m->F, F_m->N_cells * NDIM * (NDIM +2));
 }
