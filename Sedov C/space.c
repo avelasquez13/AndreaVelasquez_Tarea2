@@ -31,9 +31,8 @@ void coord(int *coord, int pos, int Nx, int Ny){
  * Retorna la posición en el arreglo de F que corresponde a las coordenadas (x,y,z) y el eje que entra por parametro
  * @param eje=0 para Fx, eje=1 para Fy, eje=2 para Fz
  */
-int posF(int eje, int x, int y, int z, int Nx, int Ny){
-	//TODO
+int posF(int x, int y, int z, int eje, int valor, int Nx, int Ny, int Nz){
 	int pos;
-
+	pos = eje*(NDIM+2)*Nx*Ny*Nz + valor*Nx*Ny*Nz + pos(x,y,z,Nx,Ny);
 	return pos;
 }
