@@ -1,6 +1,7 @@
 #include "struct.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <math.h>
 
 void init_to_zero(FLOAT *p, int n_points){
   int i;
@@ -112,4 +113,31 @@ void init_problem(physics_grid *P, U_grid *U, F_grid *F_p, F_grid *F_m){
     exit(1);
   }
   init_to_zero(F_m->F, F_m->N_cells * NDIM * (NDIM +2));
+}
+
+void init_radios(physics_grid *P, double *radios, int *posiciones){
+  int x, y, z, pos;
+  double rad_cuadrado;
+  if(!(radios = malloc(P->N_cells*sizeof(FLOAT)))){
+    fprintf(stderr, "Problem with F allocation");
+    exit(1);
+  }
+
+  if(!(posiciones = malloc(P->N_cells*sizeof(int)))){
+    fprintf(stderr, "Problem with F allocation");
+    exit(1);
+  }
+
+  for (z=0;z<P.N_z;z++){ // Guarda radio para cada posicion
+    for (y=0;y<P.N_y;y++){
+      for (x=0;x<P.N_x;x++){
+	pos = x + P.N_x*y + P.N_x*P.N_y*z;
+	posiciones[pos] = pos;
+	rad_cuadrados = ((x+0.5)*P.delta_x - 0.5*P.L_x)*((x+0.5)*P.delta_x - 0.5*P.L_x) + ((y+0.5)*P.delta_y - 0.5*P.L_y)*((y+0.5)*P.delta_y - 0.5*P.L_y) + ((z+0.5)*P.delta_z - 0.5*P.L_z)*((z+0.5)*P.delta_z - 0.5*P.L_z);
+	radios[pos] = sqrt(rad_cuadrados);
+      }
+    }
+  }
+
+  // TODO: algoritmo para ordenar radios y con eso ordenar ordenar correspondientemente posiciones
 }
