@@ -14,15 +14,52 @@
  * Calcula la evolución de la onda de choque hasta un r_final que entra por parametro
  *
  */
-void evolve(physics_grid *P, U_grid *U, F_grid *F, double r_final){
+void evolve(physics_grid *P, U_grid *U, F_grid *Fp, F_grid *Fm, double r_final){
 	//TODO
+
+	double radio, tiempo;
+	radio = radioChoque(P);
+	tiempo = 0;
+	while(radio<r_final){
+	  tiempo = step(P,U,Fp,Fm,tiempo);
+	  radio = radioChoque(P);
+	}
 }
 
 /**
- *Calcula una iteración del problema (avanza un dt)
+ *Calcula una iteración del problema (avanza un dt), devuelve el tiempo nuevo
  */
-void step(physics_grid *P, U_grid *U, F_grid *F){
+double step(physics_grid *P, U_grid *U, F_grid *Fp, F_grid *Fm, double tiempo){
 	//TODO
+        F_grid *Fp, *Fm;
+	int x, y, z, eje, val, pos, posf;
+	double dt;
+	actualizarF(U,Fp,Fm);
+	delta_t = dt(P,U);
+	for (z=1;z<U.N_z-1;z++){
+	  for (y=1;y<U.N_y-1;y++){
+	    for (x=1;x<U.N_x-1;x++){
+	      pos = pos(x,y,z,U.N_x,U.N_y);
+	      for (val=0;val<(NDIM+2);val++){
+		U.U[val*U.N_cells+pos] = U.U[val*U.N_cells+pos];
+		eje = 0;
+		posf = posF(x,y,z,eje,val,U.N_x,U.N_y,U.N_z);
+		U.U[val*U.N_cells+pos] += (Fm.F[posf] - Fp.F[posf])*delta_t/P.delta_x;
+
+		eje = 1;
+		posf = posF(x,y,z,eje,val,U.N_x,U.N_y,U.N_z);
+		U.U[val*U.N_cells+pos] += (Fm.F[posf] - Fp.F[posf])*delta_t/P.delta_y;
+
+		eje = 2;
+		posf = posF(x,y,z,eje,val,U.N_x,U.N_y,U.N_z);
+		U.U[val*U.N_cells+pos] += (Fm.F[posf] - Fp.F[posf])*delta_t/P.delta_z;
+	      }
+	    }
+	  }
+	}
+	actualizarP(P,U);
+	tiempo += dt;
+	return tiempo;
 }
 
 /**

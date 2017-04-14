@@ -8,8 +8,8 @@
 #ifndef FVM_H_
 #define FVM_H_
 
-void evolve(physics_grid *P, U_grid *U, F_grid *F, double r_final);
-void step(physics_grid *P, U_grid *U, F_grid *Fp);
+void evolve(physics_grid *P, U_grid *U, F_grid *Fp, F_grid *Fm, double r_final);
+double step(physics_grid *P, U_grid *U, F_grid *Fp, F_grid *Fm, double tiempo);
 void actualizarP(physics_grid *P, U_grid *U);
 void actualizarF(U_grid *U, F_grid *Fp, F_grid *Fm);
 double radioChoque(physics_grid *P);
