@@ -28,7 +28,6 @@ void step(physics_grid *P, U_grid *U, F_grid *F){
  * Actualiza los parametros del physics_grid con base en los valores del U_grid
  */
 void actualizarP(physics_grid *P, U_grid *U){
-	//TODO
         int val=0;
 	int x;
 	int y;
@@ -90,15 +89,15 @@ void actualizarP(physics_grid *P, U_grid *U){
  * Actualiza los valores del F_grid con base en los valores del U_grid
  */
 void actualizarF(U_grid *U, F_grid *Fp, F_grid *Fm){
-	//TODO
         int x, y, z, eje, val, i, pos, posf;
 	double u_celda[5], u_sig[5], u_ant[5], p;
-	for (z=1;z<U.N_z-1;z++){ // rho*vel
+	for (z=1;z<U.N_z-1;z++){
 	  for (y=1;y<U.N_y-1;y++){
 	    for (x=1:x<U.N_x-1;x++){
 	      pos = pos(x,y,z,U.N_x,U.N_y);
 	      u_celda = {U.U[0*U.N_cells+pos], U.U[1*U.N_cells+pos], U.U[2*U.N_cells+pos], U.U[3*U.N_cells+pos], U.U[4*U.N_cells+pos]};
 	      
+	      eje = 0; // Fx
 	      pos = pos(x+1,y,z,U.N_x,U.N_y); // Avanza en x
 	      u_sig = {U.U[0*U.N_cells+pos], U.U[1*U.N_cells+pos], U.U[2*U.N_cells+pos], U.U[3*U.N_cells+pos], U.U[4*U.N_cells+pos]};
 
@@ -110,23 +109,122 @@ void actualizarF(U_grid *U, F_grid *Fp, F_grid *Fm){
 		u_sig[i] = 0.5*(u_celda[i] + u_sig[i]);
 	      }
 
-	      eje = 0; // Fpx
-	      val = 0; // Fpx 0
+	      val = 0; // Fpmx 0
 	      posf = posF(x,y,z,eje,val,U.N_x,U.N_y,U.N_z);
-	      Fp[posF] = u_sig[1];
+	      Fp[posf] = u_sig[1];
+	      Fm[posf] = u_ant[1];
+
 	      val = 1; // Fpx 1
 	      p = presion(u_sig);
 	      posf = posF(x,y,z,eje,val,U.N_x,U.N_y,U.N_z);
 	      Fp[posf] = u_sig[1]*u_sig[1]/u_sig[0] + p;
-	      val = 2; // Fpx 2
-	      posf = posF(x,y,z,eje,val,U.N_x,U.N_y,U.N_z);
-	      Fp[posf] = u_sig[1]*u_sig[2]/u_sig[0];
-	      val = 3; // Fpx 3
-	      posf = posF(x,y,z,eje,val,U.N_x,U.N_y,U.N_z);
-	      Fp[posf] = u_sig[1]*u_sig[3]/u_sig[0];
 	      val = 4; // Fpx 4
 	      posf = posF(x,y,z,eje,val,U.N_x,U.N_y,U.N_z);
 	      Fp[posf] = u_sig[1]*u_sig[4]/u_sig[0] + p*u_sig[1]/u_sig[0];
+
+	      val = 1; // Fmx 1
+	      p = presion(u_ant);
+	      posf = posF(x,y,z,eje,val,U.N_x,U.N_y,U.N_z);
+	      Fm[posf] = u_ant[1]*u_ant[1]/u_ant[0] + p;
+	      val = 4; // Fmx 4
+	      posf = posF(x,y,z,eje,val,U.N_x,U.N_y,U.N_z);
+	      Fm[posf] = u_ant[1]*u_ant[4]/u_ant[0] + p*u_ant[1]/u_ant[0];
+
+	      val = 2; // Fpmx 2
+	      posf = posF(x,y,z,eje,val,U.N_x,U.N_y,U.N_z);
+	      Fp[posf] = u_sig[1]*u_sig[2]/u_sig[0];
+	      Fm[posf] = u_ant[1]*u_ant[2]/u_ant[0];
+	      
+	      val = 3; // Fpmx 3
+	      posf = posF(x,y,z,eje,val,U.N_x,U.N_y,U.N_z);
+	      Fp[posf] = u_sig[1]*u_sig[3]/u_sig[0];
+	      Fm[posf] = u_ant[1]*u_ant[3]/u_ant[0];
+
+	      eje = 1; // Fy
+	      pos = pos(x,y+1,z,U.N_x,U.N_y); // Avanza en y
+	      u_sig = {U.U[0*U.N_cells+pos], U.U[1*U.N_cells+pos], U.U[2*U.N_cells+pos], U.U[3*U.N_cells+pos], U.U[4*U.N_cells+pos]};
+
+	      pos = pos(x,y-1,z,U.N_x,U.N_y); // Retrocede en y
+	      u_ant = {U.U[0*U.N_cells+pos], U.U[1*U.N_cells+pos], U.U[2*U.N_cells+pos], U.U[3*U.N_cells+pos], U.U[4*U.N_cells+pos]};
+
+	      for (i=0;i<5;i++){ // Promedio backward y forward
+		u_ant[i] = 0.5*(u_celda[i] + u_ant[i]);
+		u_sig[i] = 0.5*(u_celda[i] + u_sig[i]);
+	      }
+
+	      val = 0; // Fpmy 0
+	      posf = posF(x,y,z,eje,val,U.N_x,U.N_y,U.N_z);
+	      Fp[posf] = u_sig[2];
+	      Fm[posf] = u_ant[2];
+
+	      val = 1; // Fpmy 1
+	      posf = posF(x,y,z,eje,val,U.N_x,U.N_y,U.N_z);
+	      Fp[posf] = u_sig[1]*u_sig[2]/u_sig[0];
+	      Fm[posf] = u_ant[1]*u_ant[2]/u_ant[0];
+
+	      val = 2; // Fpy 2
+	      p = presion(u_sig);
+	      posf = posF(x,y,z,eje,val,U.N_x,U.N_y,U.N_z);
+	      Fp[posf] = u_sig[2]*u_sig[2]/u_sig[0] + p;
+	      val = 4; // Fpy 4
+	      posf = posF(x,y,z,eje,val,U.N_x,U.N_y,U.N_z);
+	      Fp[posf] = u_sig[2]*u_sig[4]/u_sig[0] + p*u_sig[2]/u_sig[0];
+
+	      val = 2; // Fmy 2
+	      p = presion(u_ant);
+	      posf = posF(x,y,z,eje,val,U.N_x,U.N_y,U.N_z);
+	      Fm[posf] = u_ant[2]*u_ant[2]/u_ant[0] + p;
+	      val = 4; // Fmy 4
+	      posf = posF(x,y,z,eje,val,U.N_x,U.N_y,U.N_z);
+	      Fm[posf] = u_ant[2]*u_ant[4]/u_ant[0] + p*u_ant[2]/u_ant[0];
+
+	      val = 3; // Fpmy 3
+	      posf = posF(x,y,z,eje,val,U.N_x,U.N_y,U.N_z);
+	      Fp[posf] = u_sig[2]*u_sig[3]/u_sig[0];
+	      Fm[posf] = u_ant[2]*u_ant[3]/u_ant[0];
+
+	      eje = 2; // Fz
+	      pos = pos(x,y,z+1,U.N_x,U.N_y); // Avanza en z
+	      u_sig = {U.U[0*U.N_cells+pos], U.U[1*U.N_cells+pos], U.U[2*U.N_cells+pos], U.U[3*U.N_cells+pos], U.U[4*U.N_cells+pos]};
+
+	      pos = pos(x,y,z-1,U.N_x,U.N_y); // Retrocede en z
+	      u_ant = {U.U[0*U.N_cells+pos], U.U[1*U.N_cells+pos], U.U[2*U.N_cells+pos], U.U[3*U.N_cells+pos], U.U[4*U.N_cells+pos]};
+
+	      for (i=0;i<5;i++){ // Promedio backward y forward
+		u_ant[i] = 0.5*(u_celda[i] + u_ant[i]);
+		u_sig[i] = 0.5*(u_celda[i] + u_sig[i]);
+	      }
+
+	      val = 0; // Fpmz 0
+	      posf = posF(x,y,z,eje,val,U.N_x,U.N_y,U.N_z);
+	      Fp[posf] = u_sig[3];
+	      Fm[posf] = u_ant[3];
+
+	      val = 1; // Fpmz 1
+	      posf = posF(x,y,z,eje,val,U.N_x,U.N_y,U.N_z);
+	      Fp[posf] = u_sig[1]*u_sig[3]/u_sig[0];
+	      Fm[posf] = u_ant[1]*u_ant[3]/u_ant[0];
+
+	      val = 2; // Fpmz 2
+	      posf = posF(x,y,z,eje,val,U.N_x,U.N_y,U.N_z);
+	      Fp[posf] = u_sig[2]*u_sig[3]/u_sig[0];
+	      Fm[posf] = u_ant[2]*u_ant[3]/u_ant[0];
+
+	      val = 3; // Fpz 3
+	      p = presion(u_sig);
+	      posf = posF(x,y,z,eje,val,U.N_x,U.N_y,U.N_z);
+	      Fp[posf] = u_sig[3]*u_sig[3]/u_sig[0] + p;
+	      val = 4; // Fpz 4
+	      posf = posF(x,y,z,eje,val,U.N_x,U.N_y,U.N_z);
+	      Fp[posf] = u_sig[3]*u_sig[4]/u_sig[0] + p*u_sig[3]/u_sig[0];
+
+	      val = 3; // Fmz 3
+	      p = presion(u_ant);
+	      posf = posF(x,y,z,eje,val,U.N_x,U.N_y,U.N_z);
+	      Fm[posf] = u_ant[3]*u_ant[3]/u_ant[0] + p;
+	      val = 4; // Fmz 4
+	      posf = posF(x,y,z,eje,val,U.N_x,U.N_y,U.N_z);
+	      Fm[posf] = u_ant[3]*u_ant[4]/u_ant[0] + p*u_ant[3]/u_ant[0];
 	    }
 	  }
 	}
