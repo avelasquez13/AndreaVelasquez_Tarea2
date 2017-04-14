@@ -23,7 +23,7 @@ int main(int argc, char **argv){
   init_problem(P_state, U_state, Fp, Fm);
   length = init_radios(P_state, radios, dist, rho, posiciones);
 
-  // TODO Falta init condiciones iniciales
+  init_conditions(U_state);
 
   print_list(dist,length);
   tiempo = evolve(P_state, U_state, Fp, Fm, 10, radios, rho, dist, posiciones, length, tiempo);

@@ -16,6 +16,7 @@
  */
 double evolve(physics_grid *P, U_grid *U, F_grid *Fp, F_grid *Fm, double r_final, double *radios, double *rho, double *dist, int *posiciones, int length, double tiempo){
         double radio;
+	actualizarP(P,U);
 	radio = radioChoque(P,radios,rho, dist,posiciones,length);
 	while(radio<r_final){
 	  tiempo = step(P,U,Fp,Fm,tiempo);

@@ -3,3 +3,4 @@ physics_grid * create_physics_grid(void);
 U_grid * create_U_grid(void);
 F_grid * create_F_grid(void);
 int init_radios(physics_grid *P, double *radios, double *dist, double *rho, int *posiciones);
+void init_conditions(U_grid *U);

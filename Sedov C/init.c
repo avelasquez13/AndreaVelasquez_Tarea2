@@ -168,3 +168,10 @@ int init_radios(physics_grid *P, double *radios, double *dist, double *rho, int 
   }
   return length
 }
+
+/**
+ * Inicializa las condiciones iniciales de la explosion
+ */
+void init_conditions(U_grid *U){
+  // TODO condiciones iniciales
+}
