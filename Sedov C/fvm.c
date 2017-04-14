@@ -5,6 +5,7 @@
  *      Author: felipe
  */
 #include <stdio.h>
+#include <math.h>
 #include "struct.h"
 #include "fvm.h"
 #include "space.h"
@@ -243,48 +244,84 @@ double radioChoque(physics_grid *P){
 /**
  * Actualiza los valores de entalpía
  */
-void h(physics_grid *P, double* h){
-	//TODO
-
+void h(U_grid *U, double* h){
+        int pos;
+	double u_celda[5], p;
+	for (pos=0;pos<U.N_cells;pos++){
+	  u_celda = {U.U[0*U.N_cells+pos], U.U[1*U.N_cells+pos], U.U[2*U.N_cells+pos], U.U[3*U.N_cells+pos], U.U[4*U.N_cells+pos]};
+	  p = presion(u_celda);
+	  h[pos] = (u_celda[4] + p)/u_celda[0];
+	}
 }
 
 /**
  * Actualiza los valores de cs
  */
-void cs(physics_grid *P, double* cs){
-	//TODO
+void cs(U_grid *U, double* cs){
+        double *h;
+	int pos;
 
+	if(!(h = malloc(U.N_cells*sizeof(double)))){
+	  fprintf(stderr, "Problem with data allocation\n");fflush(stdout);
+	  exit(0);
+	}
+	h(U,h);
+	for (pos=0;pos<U.N_cells;pos++){
+	  cs[pos] = sqrt((GAMMA + 1)*h[pos]);
+	}
+	free(h);
 }
 
 /**
  * Encuentra el valor de (u, v, ó w)+cs máximo
  */
-double vmax(physics_grid *P, double* cs){
-	double vmax;
-	//TODO
+double vmax(physics_grid *P, U_grid *U){
+        double vmax, vel, *cs;
+	int pos,eje;
+
+	if(!(cs = malloc(U.N_cells*sizeof(double)))){
+	  fprintf(stderr, "Problem with data allocation\n");fflush(stdout);
+	  exit(0);
+	}
+	cs(U,cs);
+
+	vmax = P.P[2*P.N_cells] + cs[0];
+	for (pos=0;pos<P.N_cells;pos++){
+	  for (eje=0;eje<3;eje++){
+	    vel = P.P[(2+eje)*P.N_cells+pos] + cs[pos];
+	    if (vel > vmax){
+	      vmax = vel;
+	    }
+	  }
+	}
+	free(cs);
 	return vmax;
 }
 
 /**
  * Encuentra el dt apropiado para las condiciones actuales
  */
-double dt(physics_grid *P, double* cs){
-	double dt;
-	//TODO
+double dt(physics_grid *P, U_grid *U){
+	double dt, vmax;
+	vmax = vmax(P,U);
+	dt = 0.5*(P.delta_x/max);
 	return dt;
 }
 
 /**
  * Devuelve un vector con la propiedad deseada del physics_grid
- * @param int propiedad toma los valores de las constnates:
+ * @param int propiedad toma los valores de las constantes:
  * RHO= 0
  * PRESSURE= 1
  * VX= 2
  * VY= 3
  * VZ= 4
  */
-double* propiedad(physics_grid *P, int propiedad){
-	//TODO
+void propiedad(physics_grid *P, int propiedad, double *prop){
+	int pos;
+	for (pos=0;pos<P.N_cells;pos++){
+	  prop[pos] = P.P[propiedad*P.N_cells+pos];
+	}
 }
 
 /**
