@@ -14,12 +14,12 @@
  * Calcula la evolución de la onda de choque hasta un r_final que entra por parametro
  *
  */
-double evolve(physics_grid *P, U_grid *U, F_grid *Fp, F_grid *Fm, double r_final, double *radios, int *posiciones, double tiempo){
-        double radio, tiempo;
-	radio = radioChoque(P,radios,posiciones);
+double evolve(physics_grid *P, U_grid *U, F_grid *Fp, F_grid *Fm, double r_final, double *radios, double *rho, double *dist, int *posiciones, int length, double tiempo){
+        double radio;
+	radio = radioChoque(P,radios,rho, dist,posiciones,length);
 	while(radio<r_final){
 	  tiempo = step(P,U,Fp,Fm,tiempo);
-	  radio = radioChoque(P);
+	  radio = radioChoque(P,radios,rho, dist,posiciones,length);
 	}
 	return tiempo
 }
