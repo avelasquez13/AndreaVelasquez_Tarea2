@@ -5,6 +5,7 @@
  *      Author: felipe
  */
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 #include "struct.h"
 #include "fvm.h"
@@ -15,12 +16,12 @@
  *
  */
 double evolve(physics_grid *P, U_grid *U, F_grid *Fp, F_grid *Fm, double r_final, double *radios, double *rho, double *dist, int *posiciones, int length){
-	double radio;
+	double radio=0;
     double tiempo=0;
 
 	actualizarP(P,U);
-	radio = radioChoque(P,radios,rho, dist,posiciones,length);
 	while(radio<r_final){
+		fprintf(stdout, "Tiempo = %f\n", tiempo);
 	  tiempo += step(P,U,Fp,Fm);
 	  radio = radioChoque(P,radios,rho, dist,posiciones,length);
 	}
@@ -38,7 +39,7 @@ double step(physics_grid *P, U_grid *U, F_grid *Fp, F_grid *Fm){
 	for (z=1;z<U->N_z-1;z++){
 	  for (y=1;y<U->N_y-1;y++){
 	    for (x=1;x<U->N_x-1;x++){
-	      pos = pos(x,y,z,U->N_x,U->N_y);
+	      pos = posi(x,y,z,U->N_x,U->N_y);
 	      for (val=0;val<(NDIM+2);val++){
 	    	//U->U[val*U.N_cells+pos] = U->U[val*U.N_cells+pos]; //Que quiere hacer aca?
 
@@ -58,7 +59,7 @@ double step(physics_grid *P, U_grid *U, F_grid *Fp, F_grid *Fm){
 	  }
 	}
 	actualizarP(P,U);
-	return dt;
+	return delta_t;
 }
 
 /**
@@ -81,7 +82,7 @@ void actualizarP(physics_grid *P, U_grid *U){
 	for (z=0;z<P->N_z;z++){ // Presion
 	  for (y=0;y<P->N_y;y++){
 	    for (x=0;x<P->N_x;x++){
-	      pos = pos(x,y,z,P->N_x,P->N_y);
+	      pos = posi(x,y,z,P->N_x,P->N_y);
 	      for (i=0;i<5;i++){
 		u[i] = U->U[i*P->N_cells+pos];
 	      }
@@ -95,7 +96,7 @@ void actualizarP(physics_grid *P, U_grid *U){
 	for (z=0;z<P->N_z;z++){ // Vel x
 	  for (y=0;y<P->N_y;y++){
 	    for (x=0;x<P->N_x;x++){
-	      pos = pos(x,y,z,P->N_x,P->N_y);
+	      pos = posi(x,y,z,P->N_x,P->N_y);
 	      P->P[val*P->N_cells+pos] = U->U[(val-1)*P->N_cells+pos]/U->U[pos];
 	    }
 	  }
@@ -105,7 +106,7 @@ void actualizarP(physics_grid *P, U_grid *U){
 	for (z=0;z<P->N_z;z++){ // Vel y
 	  for (y=0;y<P->N_y;y++){
 	    for (x=0;x<P->N_x;x++){
-	      pos = pos(x,y,z,P->N_x,P->N_y);
+	      pos = posi(x,y,z,P->N_x,P->N_y);
 	      P->P[val*P->N_cells+pos] = U->U[(val-1)*P->N_cells+pos]/U->U[pos];
 	    }
 	  }
@@ -115,7 +116,7 @@ void actualizarP(physics_grid *P, U_grid *U){
 	for (z=0;z<P->N_z;z++){ // Vel z
 	  for (y=0;y<P->N_y;y++){
 	    for (x=0;x<P->N_x;x++){
-	      pos = pos(x,y,z,P->N_x,P->N_y);
+	      pos = posi(x,y,z,P->N_x,P->N_y);
 	      P->P[val*P->N_cells+pos] = U->U[(val-1)*P->N_cells+pos]/U->U[pos];
 	    }
 	  }
@@ -132,15 +133,15 @@ void actualizarF(U_grid *U, F_grid *Fp, F_grid *Fm){
 	  for (y=1;y<U->N_y-1;y++){
 	    for (x=1;x<U->N_x-1;x++){
 
-	      pos = pos(x,y,z,U->N_x,U->N_y);
-	      u_celda = Ucelda(pos, U);
+	      pos = posi(x,y,z,U->N_x,U->N_y);
+	      Ucelda(pos, U,u_celda);
 	      
 	      eje = 0; // Fx
-	      pos = pos(x+1,y,z,U->N_x,U->N_y); // Avanza en x
-	      u_sig = Ucelda(pos, U);
+	      pos = posi(x+1,y,z,U->N_x,U->N_y); // Avanza en x
+	      Ucelda(pos, U,u_sig);
 
-	      pos = pos(x-1,y,z,U->N_x,U->N_y); // Retrocede en x
-	      u_ant = Ucelda(pos, U);
+	      pos = posi(x-1,y,z,U->N_x,U->N_y); // Retrocede en x
+	      Ucelda(pos, U, u_ant);
 
 	      for (i=0;i<5;i++){ // Promedio backward y forward
 	    	  u_ant[i] = 0.5*(u_celda[i] + u_ant[i]);
@@ -155,37 +156,37 @@ void actualizarF(U_grid *U, F_grid *Fp, F_grid *Fm){
 	      val = 1; // Fpx 1
 	      p = presion(u_sig);
 	      posf = posF(x,y,z,eje,val,U->N_x,U->N_y,U->N_z);
-	      Fp->F[posF] = u_sig[1]*u_sig[1]/u_sig[0] + p;
+	      Fp->F[posf] = u_sig[1]*u_sig[1]/u_sig[0] + p;
 	      val = 4; // Fpx 4
 	      posf = posF(x,y,z,eje,val,U->N_x,U->N_y,U->N_z);
-	      Fp->F[posF] = u_sig[1]*u_sig[4]/u_sig[0] + p*u_sig[1]/u_sig[0];
+	      Fp->F[posf] = u_sig[1]*u_sig[4]/u_sig[0] + p*u_sig[1]/u_sig[0];
 
 	      val = 1; // Fmx 1
 	      p = presion(u_ant);
 	      posf = posF(x,y,z,eje,val,U->N_x,U->N_y,U->N_z);
-	      Fm->F[posF] = u_ant[1]*u_ant[1]/u_ant[0] + p;
+	      Fm->F[posf] = u_ant[1]*u_ant[1]/u_ant[0] + p;
 	      val = 4; // Fmx 4
 	      posf = posF(x,y,z,eje,val,U->N_x,U->N_y,U->N_z);
-	      Fm->F[posF] = u_ant[1]*u_ant[4]/u_ant[0] + p*u_ant[1]/u_ant[0];
+	      Fm->F[posf] = u_ant[1]*u_ant[4]/u_ant[0] + p*u_ant[1]/u_ant[0];
 
 	      val = 2; // Fpmx 2
 	      posf = posF(x,y,z,eje,val,U->N_x,U->N_y,U->N_z);
-	      Fp->F[posF] = u_sig[1]*u_sig[2]/u_sig[0];
-	      Fm->F[posF] = u_ant[1]*u_ant[2]/u_ant[0];
+	      Fp->F[posf] = u_sig[1]*u_sig[2]/u_sig[0];
+	      Fm->F[posf] = u_ant[1]*u_ant[2]/u_ant[0];
 	      
 	      val = 3; // Fpmx 3
 	      posf = posF(x,y,z,eje,val,U->N_x,U->N_y,U->N_z);
-	      Fp->F[posF] = u_sig[1]*u_sig[3]/u_sig[0];
-	      Fm->F[posF] = u_ant[1]*u_ant[3]/u_ant[0];
+	      Fp->F[posf] = u_sig[1]*u_sig[3]/u_sig[0];
+	      Fm->F[posf] = u_ant[1]*u_ant[3]/u_ant[0];
 
 	      eje = 1; // Fy
-	      pos = pos(x,y+1,z,U->N_x,U->N_y); // Avanza en y
+	      pos = posi(x,y+1,z,U->N_x,U->N_y); // Avanza en y
 	      //u_sig = {U->U[0*U->N_cells+pos], U->U[1*U->N_cells+pos], U->U[2*U->N_cells+pos], U->U[3*U->N_cells+pos], U->U[4*U->N_cells+pos]};
-	      u_sig = U[pos]->U;
+	      Ucelda(pos, U,u_sig);
 
-	      pos = pos(x,y-1,z,U->N_x,U->N_y); // Retrocede en y
+	      pos = posi(x,y-1,z,U->N_x,U->N_y); // Retrocede en y
 	      //u_ant = {U->U[0*U->N_cells+pos], U->U[1*U->N_cells+pos], U->U[2*U->N_cells+pos], U->U[3*U->N_cells+pos], U->U[4*U->N_cells+pos]};
-	      u_ant = U[pos]->U;
+	      Ucelda(pos, U,u_ant);
 
 	      for (i=0;i<5;i++){ // Promedio backward y forward
 	    	  u_ant[i] = 0.5*(u_celda[i] + u_ant[i]);
@@ -194,41 +195,41 @@ void actualizarF(U_grid *U, F_grid *Fp, F_grid *Fm){
 
 	      val = 0; // Fpmy 0
 	      posf = posF(x,y,z,eje,val,U->N_x,U->N_y,U->N_z);
-	      Fp->F[posF] = u_sig[2];
-	      Fm->F[posF] = u_ant[2];
+	      Fp->F[posf] = u_sig[2];
+	      Fm->F[posf] = u_ant[2];
 
 	      val = 1; // Fpmy 1
 	      posf = posF(x,y,z,eje,val,U->N_x,U->N_y,U->N_z);
-	      Fp->F[posF] = u_sig[1]*u_sig[2]/u_sig[0];
-	      Fm->F[posF] = u_ant[1]*u_ant[2]/u_ant[0];
+	      Fp->F[posf] = u_sig[1]*u_sig[2]/u_sig[0];
+	      Fm->F[posf] = u_ant[1]*u_ant[2]/u_ant[0];
 
 	      val = 2; // Fpy 2
 	      p = presion(u_sig);
 	      posf = posF(x,y,z,eje,val,U->N_x,U->N_y,U->N_z);
-	      Fp->F[posF] = u_sig[2]*u_sig[2]/u_sig[0] + p;
+	      Fp->F[posf] = u_sig[2]*u_sig[2]/u_sig[0] + p;
 	      val = 4; // Fpy 4
 	      posf = posF(x,y,z,eje,val,U->N_x,U->N_y,U->N_z);
-	      Fp->F[posF] = u_sig[2]*u_sig[4]/u_sig[0] + p*u_sig[2]/u_sig[0];
+	      Fp->F[posf] = u_sig[2]*u_sig[4]/u_sig[0] + p*u_sig[2]/u_sig[0];
 
 	      val = 2; // Fmy 2
 	      p = presion(u_ant);
 	      posf = posF(x,y,z,eje,val,U->N_x,U->N_y,U->N_z);
-	      Fm->F[posF] = u_ant[2]*u_ant[2]/u_ant[0] + p;
+	      Fm->F[posf] = u_ant[2]*u_ant[2]/u_ant[0] + p;
 	      val = 4; // Fmy 4
 	      posf = posF(x,y,z,eje,val,U->N_x,U->N_y,U->N_z);
-	      Fm->F[posF] = u_ant[2]*u_ant[4]/u_ant[0] + p*u_ant[2]/u_ant[0];
+	      Fm->F[posf] = u_ant[2]*u_ant[4]/u_ant[0] + p*u_ant[2]/u_ant[0];
 
 	      val = 3; // Fpmy 3
 	      posf = posF(x,y,z,eje,val,U->N_x,U->N_y,U->N_z);
-	      Fp->F[posF] = u_sig[2]*u_sig[3]/u_sig[0];
-	      Fm->F[posF] = u_ant[2]*u_ant[3]/u_ant[0];
+	      Fp->F[posf] = u_sig[2]*u_sig[3]/u_sig[0];
+	      Fm->F[posf] = u_ant[2]*u_ant[3]/u_ant[0];
 
 	      eje = 2; // Fz
-	      pos = pos(x,y,z+1,U->N_x,U->N_y); // Avanza en z
-	      //u_sig = {U->U[0*U->N_cells+pos], U->U[1*U->N_cells+pos], U->U[2*U->N_cells+pos], U->U[3*U->N_cells+pos], U->U[4*U->N_cells+pos]};
+	      pos = posi(x,y,z+1,U->N_x,U->N_y); // Avanza en z
+	      Ucelda(pos, U,u_sig);
 
-	      pos = pos(x,y,z-1,U->N_x,U->N_y); // Retrocede en z
-	      //u_ant = {U->U[0*U->N_cells+pos], U->U[1*U->N_cells+pos], U->U[2*U->N_cells+pos], U->U[3*U->N_cells+pos], U->U[4*U->N_cells+pos]};
+	      pos = posi(x,y,z-1,U->N_x,U->N_y); // Retrocede en z
+	      Ucelda(pos, U, u_ant);
 
 	      for (i=0;i<5;i++){ // Promedio backward y forward
 	    	  u_ant[i] = 0.5*(u_celda[i] + u_ant[i]);
@@ -237,34 +238,34 @@ void actualizarF(U_grid *U, F_grid *Fp, F_grid *Fm){
 
 	      val = 0; // Fpmz 0
 	      posf = posF(x,y,z,eje,val,U->N_x,U->N_y,U->N_z);
-	      Fp->F[posF] = u_sig[3];
-	      Fm->F[posF] = u_ant[3];
+	      Fp->F[posf] = u_sig[3];
+	      Fm->F[posf] = u_ant[3];
 
 	      val = 1; // Fpmz 1
 	      posf = posF(x,y,z,eje,val,U->N_x,U->N_y,U->N_z);
-	      Fp->F[posF] = u_sig[1]*u_sig[3]/u_sig[0];
-	      Fm->F[posF] = u_ant[1]*u_ant[3]/u_ant[0];
+	      Fp->F[posf] = u_sig[1]*u_sig[3]/u_sig[0];
+	      Fm->F[posf] = u_ant[1]*u_ant[3]/u_ant[0];
 
 	      val = 2; // Fpmz 2
 	      posf = posF(x,y,z,eje,val,U->N_x,U->N_y,U->N_z);
-	      Fp->F[posF] = u_sig[2]*u_sig[3]/u_sig[0];
-	      Fm->F[posF] = u_ant[2]*u_ant[3]/u_ant[0];
+	      Fp->F[posf] = u_sig[2]*u_sig[3]/u_sig[0];
+	      Fm->F[posf] = u_ant[2]*u_ant[3]/u_ant[0];
 
 	      val = 3; // Fpz 3
 	      p = presion(u_sig);
 	      posf = posF(x,y,z,eje,val,U->N_x,U->N_y,U->N_z);
-	      Fp->F[posF] = u_sig[3]*u_sig[3]/u_sig[0] + p;
+	      Fp->F[posf] = u_sig[3]*u_sig[3]/u_sig[0] + p;
 	      val = 4; // Fpz 4
 	      posf = posF(x,y,z,eje,val,U->N_x,U->N_y,U->N_z);
-	      Fp->F[posF] = u_sig[3]*u_sig[4]/u_sig[0] + p*u_sig[3]/u_sig[0];
+	      Fp->F[posf] = u_sig[3]*u_sig[4]/u_sig[0] + p*u_sig[3]/u_sig[0];
 
 	      val = 3; // Fmz 3
 	      p = presion(u_ant);
 	      posf = posF(x,y,z,eje,val,U->N_x,U->N_y,U->N_z);
-	      Fm->F[posF] = u_ant[3]*u_ant[3]/u_ant[0] + p;
+	      Fm->F[posf] = u_ant[3]*u_ant[3]/u_ant[0] + p;
 	      val = 4; // Fmz 4
 	      posf = posF(x,y,z,eje,val,U->N_x,U->N_y,U->N_z);
-	      Fm->F[posF] = u_ant[3]*u_ant[4]/u_ant[0] + p*u_ant[3]/u_ant[0];
+	      Fm->F[posf] = u_ant[3]*u_ant[4]/u_ant[0] + p*u_ant[3]/u_ant[0];
 	    }
 	  }
 	}
@@ -275,18 +276,19 @@ void actualizarF(U_grid *U, F_grid *Fp, F_grid *Fm){
  */
 double radioChoque(physics_grid *P, double *radios, double *rho, double *dist, int *posiciones, int length){
 	double r, der, dermax, *pres;
-	int i, max;
+	int i;
+	int max=0;
 
 	if(!(pres = malloc((P->N_cells/8)*sizeof(double)))){
 	  fprintf(stderr, "Problem with data allocation\n");fflush(stdout);
 	  exit(0);
 	}
 
-	//TODO arreglar los parametros de este llamado
-	//perfilRadial(P,radios,posiciones,length,dens,pres,dist);
+	perfilRadial(P,radios,posiciones,length,rho,pres,dist);
+
 	dermax = 0;
+	der = 0;
 	for (i=1;i<length;i++){
-	  der = 0;
 	  der = (pres[i] - pres[i-1])/(dist[i] - dist[i-1]);
 	  if (dermax<der){
 	    dermax = der;
@@ -305,9 +307,9 @@ double radioChoque(physics_grid *P, double *radios, double *rho, double *dist, i
 void h(U_grid *U, double* h){
         int pos;
 	double p;
-	double* u_celda;
+	double u_celda[5];
 	for (pos=0;pos<U->N_cells;pos++){
-	  u_celda = Ucelda(pos, U);
+	  Ucelda(pos, U, u_celda);
 	  p = presion(u_celda);
 	  h[pos] = (u_celda[4] + p)/u_celda[0];
 	}
@@ -317,43 +319,43 @@ void h(U_grid *U, double* h){
  * Actualiza los valores de cs
  */
 void cs(U_grid *U, double* cs){
-        double *h;
+        double *h_act;
 	int pos;
 
-	if(!(h = malloc(U->N_cells*sizeof(double)))){
+	if(!(h_act = malloc(U->N_cells*sizeof(double)))){
 	  fprintf(stderr, "Problem with data allocation\n");fflush(stdout);
 	  exit(0);
 	}
-	h(U,h);
+	h(U,h_act);
 	for (pos=0;pos<U->N_cells;pos++){
-	  cs[pos] = sqrt((GAMMA + 1)*h[pos]);
+	  cs[pos] = sqrt((GAMMA + 1)*h_act[pos]);
 	}
-	free(h);
+	free(h_act);
 }
 
 /**
  * Encuentra el valor de (u, v, ó w)+cs máximo
  */
 double vmax(physics_grid *P, U_grid *U){
-        double vmax, vel, *cs;
+        double vmax, vel, *cs_act;
 	int pos,eje;
 
-	if(!(cs = malloc(U->N_cells*sizeof(double)))){
+	if(!(cs_act = malloc(U->N_cells*sizeof(double)))){
 	  fprintf(stderr, "Problem with data allocation\n");fflush(stdout);
 	  exit(0);
 	}
-	cs(U,cs);
+	cs(U,cs_act);
 
-	vmax = P->P[2*P->N_cells] + cs[0];
+	vmax = P->P[2*P->N_cells] + cs_act[0];
 	for (pos=0;pos<P->N_cells;pos++){
 	  for (eje=0;eje<3;eje++){
-	    vel = P->P[(2+eje)*P->N_cells+pos] + cs[pos];
+	    vel = P->P[(2+eje)*P->N_cells+pos] + cs_act[pos];
 	    if (vel > vmax){
 	      vmax = vel;
 	    }
 	  }
 	}
-	free(cs);
+	free(cs_act);
 	return vmax;
 }
 
@@ -361,9 +363,9 @@ double vmax(physics_grid *P, U_grid *U){
  * Encuentra el dt apropiado para las condiciones actuales
  */
 double dt(physics_grid *P, U_grid *U){
-	double dt, vmax;
-	vmax = vmax(P,U);
-	dt = 0.5*(P->delta_x/vmax);
+	double dt, vm;
+	vm = vmax(P,U);
+	dt = 0.5*(P->delta_x/vm);
 	return dt;
 }
 
@@ -396,10 +398,10 @@ double presion(double *u_cell){
  * Evalua y produce una lista de promedio radial de densidad y presion
  */
 void perfilRadial(physics_grid *P, double *radios, int *posiciones, int length, double *dens, double *pres, double *dist){
-	int i, j, pos, num;
+	int i, j, pos;
 	double dens_m, pres_m, *dens_ord, *pres_ord;
 
-	int nCells=P[0]->N_cells;
+	int nCells=P->N_cells;
 
 	if(!(dens_ord = malloc(nCells*sizeof(double)))){
 	  fprintf(stderr, "Problem with data allocation\n");fflush(stdout);
@@ -442,9 +444,12 @@ void perfilRadial(physics_grid *P, double *radios, int *posiciones, int length, 
 /**
  * Retorna el vector U para una celda especifica como una lista de 5 doubles
  */
-double* Ucelda(int pos, U_grid* U_act)
+void Ucelda(int pos, U_grid* U_act, double* u)
 {
 	int ncells=U_act->N_cells;
-	double U[5]={U_act->U[0*ncells+pos], U_act->U[1*ncells+pos], U_act->U[2*ncells+pos], U_act->U[3*ncells+pos], U_act->U[4*ncells+pos]};
-	return U;
+	u[0]= U_act->U[0*ncells+pos];
+	u[1]= U_act->U[1*ncells+pos];
+	u[2]= U_act->U[2*ncells+pos];
+	u[3]= U_act->U[3*ncells+pos];
+	u[4]= U_act->U[4*ncells+pos];
 }

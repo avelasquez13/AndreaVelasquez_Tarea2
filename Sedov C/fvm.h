@@ -2,7 +2,7 @@
  * fvm.h
  *
  *  Created on: Apr 11, 2017
- *      Author: felip
+ *      Author: felipe
  */
 
 #ifndef FVM_H_
@@ -20,6 +20,6 @@ double dt(physics_grid *P, U_grid *U);
 void propiedad(physics_grid *P, int propiedad, double *prop);
 double presion(double *u_cell);
 void perfilRadial(physics_grid *P, double *radios, int *posiciones, int length, double *dens, double *pres, double *dist);
-double* Ucelda(int pos, U_grid* U_act);
+void Ucelda(int pos, U_grid* U_act, double* u);
 
 #endif /* FVM_H_ */

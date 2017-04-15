@@ -13,7 +13,7 @@
 #define ejZ 2
 
 
-int pos(int x, int y, int z, int Nx, int Ny);
+int posi(int x, int y, int z, int Nx, int Ny);
 void coord(int *coord, int pos, int Nx, int Ny);
 int posF(int x, int y, int z, int eje, int valor, int Nx, int Ny, int Nz);
 

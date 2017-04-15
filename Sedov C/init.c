@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+#include "init.h"
+#include "space.h"
 
 void init_to_zero(FLOAT *p, int n_points){
   int i;
@@ -17,7 +19,6 @@ physics_grid * create_physics_grid(void){
     fprintf(stderr, "Problem with data allocation\n");fflush(stdout);
     exit(0);
   } 
-  //TODO Falta definir los parametros de la malla
   G->L_x=0.0;
   G->L_y=0.0;
   G->L_z=0.0;
@@ -59,6 +60,29 @@ F_grid * create_F_grid(void){
   G->N_cells=0.0;
   G->F=NULL;
   return G;
+}
+
+double* create_listNdoubles(physics_grid *P){
+	double *G;
+	  if(!(G = malloc(P->N_cells*sizeof(FLOAT)))){
+	    fprintf(stderr, "Problem with F allocation");
+	    exit(1);
+	  }
+	  init_to_zero(G, P->N_cells);
+	  return G;
+}
+int* create_listNints(physics_grid *P){
+	int *G;
+	  if(!(G = malloc(P->N_cells*sizeof(FLOAT)))){
+	    fprintf(stderr, "Problem with F allocation");
+	    exit(1);
+	  }
+
+	  int i;
+	  for(i=0;i<P->N_cells;i++){
+	    G[i] = 0;
+	  }
+	  return G;
 }
 
 
@@ -118,41 +142,21 @@ void init_problem(physics_grid *P, U_grid *U, F_grid *F_p, F_grid *F_m){
 /**
  * Inicializa la lista de radios de las celdas y la lista de posiciones ordenada por radio ascendente
  */
-int init_radios(physics_grid *P, double *radios, double *dist, double *rho, int *posiciones){
-  int i, x, y, z, pos, length;
+void init_radios(physics_grid *P, double *radios, double *dist, double *rho, int *posiciones, int length){
+  int i, x, y, z, pos;
   double rad_cuadrados;
-  if(!(radios = malloc(P->N_cells*sizeof(FLOAT)))){
-    fprintf(stderr, "Problem with F allocation");
-    exit(1);
-  }
-
-  if(!(posiciones = malloc(P->N_cells*sizeof(int)))){
-    fprintf(stderr, "Problem with F allocation");
-    exit(1);
-  }
-
-  if(!(dist = malloc((P->N_cells/8)*sizeof(int)))){
-    fprintf(stderr, "Problem with F allocation");
-    exit(1);
-  }
-
-  if(!(rho = malloc((P->N_cells/8)*sizeof(int)))){
-    fprintf(stderr, "Problem with F allocation");
-    exit(1);
-  }
 
   for (z=0;z<P->N_z;z++){ // Guarda radio para cada posicion
     for (y=0;y<P->N_y;y++){
       for (x=0;x<P->N_x;x++){
-    	  pos = x + P->N_x*y + P->N_x*P->N_y*z;
+    	  pos = posi(x,y,z, P->N_x,P->N_y);
     	  posiciones[pos] = pos;
     	  rad_cuadrados = ((x+0.5)*P->delta_x - 0.5*P->L_x)*((x+0.5)*P->delta_x - 0.5*P->L_x) + ((y+0.5)*P->delta_y - 0.5*P->L_y)*((y+0.5)*P->delta_y - 0.5*P->L_y) + ((z+0.5)*P->delta_z - 0.5*P->L_z)*((z+0.5)*P->delta_z - 0.5*P->L_z);
-    	  radios[pos] = sqrt(rad_cuadrados);
+    	 radios[pos] = sqrt(rad_cuadrados);
       }
     }
   }
-
-  // TODO: algoritmo para ordenar radios y con eso ordenar ordenar correspondientemente posiciones
+  ordenarPorRadios(radios, posiciones, P->N_cells);
 
   pos = 1;
   dist [0] = radios[0];
@@ -169,12 +173,40 @@ int init_radios(physics_grid *P, double *radios, double *dist, double *rho, int 
       dist[i] = -1;
     }
   }
-  return length;
 }
 
 /**
  * Inicializa las condiciones iniciales de la explosion
  */
-void init_conditions(U_grid *U){
+void init_conditions(U_grid *U, physics_grid *P){
   // TODO falta definir las condiciones iniciales
+	int i;
+	int ncells=U->N_cells;
+	for (i = 0; i <ncells *(NDIM+2); ++i) {
+		U->U[0*ncells+i]=1.177;
+		U->U[4*ncells+i]=101325/0.4;
+	}
+	int pos=posi(P->L_x/2, P->L_y/2, P->L_z/2, P->L_x, P->L_y);
+	U->U[4*ncells+pos]=1.177*pow(10,10);
+}
+
+/**
+ * Ordena los radios y las posiciones por radio ascendente. Utiliza el algoritmo bubble sort.
+ */
+void ordenarPorRadios(double *radios, int *posiciones, int length){
+	int i,j;
+	double rad,pos;
+	for (i = 1; i < length; ++i) {
+		for (j = 0; j < length-i; ++j) {
+			rad=radios[j];
+			pos=posiciones[j];
+			if(rad>radios[j+1]){
+						//radios[j]=radios[j+1];
+						//posiciones[j]=posiciones[j+1];
+						//radios[j+1]=rad;
+						//posiciones[j+1]=pos;
+				//TODO arreglar esto
+					}
+		}
+	}
 }
