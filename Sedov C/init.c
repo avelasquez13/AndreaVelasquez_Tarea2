@@ -73,7 +73,7 @@ double* create_listNdoubles(physics_grid *P){
 }
 int* create_listNints(physics_grid *P){
 	int *G;
-	  if(!(G = malloc(P->N_cells*sizeof(FLOAT)))){
+	  if(!(G = malloc(P->N_cells*sizeof(int)))){
 	    fprintf(stderr, "Problem with F allocation");
 	    exit(1);
 	  }
@@ -151,7 +151,7 @@ int init_radios(physics_grid *P, double *radios, double *dist, double *rho, int 
       for (x=0;x<P->N_x;x++){
     	  pos = posi(x,y,z, P->N_x,P->N_y);
     	  posiciones[pos] = pos;
-    	  rad_cuadrados = ((x+0.5)*P->delta_x - 0.5*P->L_x)*((x+0.5)*P->delta_x - 0.5*P->L_x) + ((y+0.5)*P->delta_y - 0.5*P->L_y)*((y+0.5)*P->delta_y - 0.5*P->L_y) + ((z+0.5)*P->delta_z - 0.5*P->L_z)*((z+0.5)*P->delta_z - 0.5*P->L_z);
+    	  rad_cuadrados = pow(P->delta_x*(x - P->N_x/2),2) + pow(P->delta_y*(y - P->N_y/2),2) + pow(P->delta_z*(z - P->N_z/2),2);
     	 radios[pos] = sqrt(rad_cuadrados);
       }
     }
@@ -183,11 +183,11 @@ void init_conditions(U_grid *U, physics_grid *P){
   // TODO falta definir las condiciones iniciales
 	int i;
 	int ncells=U->N_cells;
-	for (i = 0; i <ncells *(NDIM+2); ++i) {
+	for (i = 0; i < ncells; ++i) {
 		U->U[0*ncells+i]=1.177;
 		U->U[4*ncells+i]=101325/0.4;
 	}
-	int pos=posi(P->L_x/2, P->L_y/2, P->L_z/2, P->L_x, P->L_y);
+	int pos=posi(P->N_x/2, P->N_y/2, P->N_z/2, P->N_x, P->N_y);
 	U->U[4*ncells+pos]=1.177*pow(10,10);
 }
 
