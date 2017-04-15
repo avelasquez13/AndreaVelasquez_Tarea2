@@ -142,8 +142,8 @@ void init_problem(physics_grid *P, U_grid *U, F_grid *F_p, F_grid *F_m){
 /**
  * Inicializa la lista de radios de las celdas y la lista de posiciones ordenada por radio ascendente
  */
-void init_radios(physics_grid *P, double *radios, double *dist, double *rho, int *posiciones, int length){
-  int i, x, y, z, pos;
+int init_radios(physics_grid *P, double *radios, double *dist, double *rho, int *posiciones){
+  int i, x, y, z, pos,length;
   double rad_cuadrados;
 
   for (z=0;z<P->N_z;z++){ // Guarda radio para cada posicion
@@ -173,6 +173,7 @@ void init_radios(physics_grid *P, double *radios, double *dist, double *rho, int
       dist[i] = -1;
     }
   }
+  return length;
 }
 
 /**
@@ -198,13 +199,14 @@ void ordenarPorRadios(double *radios, int *posiciones, int length){
 	double rad,pos;
 	for (i = 1; i < length; ++i) {
 		for (j = 0; j < length-i; ++j) {
+		    printf("Pos ord: %d,%d\n",i,j);
 			rad=radios[j];
 			pos=posiciones[j];
 			if(rad>radios[j+1]){
-						//radios[j]=radios[j+1];
-						//posiciones[j]=posiciones[j+1];
-						//radios[j+1]=rad;
-						//posiciones[j+1]=pos;
+						radios[j]=radios[j+1];
+						posiciones[j]=posiciones[j+1];
+						radios[j+1]=rad;
+						posiciones[j+1]=pos;
 				//TODO arreglar esto
 					}
 		}
