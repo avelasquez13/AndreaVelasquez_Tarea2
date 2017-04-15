@@ -17,11 +17,12 @@
  */
 double evolve(physics_grid *P, U_grid *U, F_grid *Fp, F_grid *Fm, double r_final, double *radios, double *rho, double *dist, int *posiciones, int length){
 	double radio=0;
-    double tiempo=0;
+	double tiempo=0;
 
 	actualizarP(P,U);
+	radio = radioChoque(P,radios,rho, dist,posiciones,length);
 	while(radio<r_final){
-		fprintf(stdout, "Tiempo = %f\n", tiempo);
+	  fprintf(stdout, "Tiempo = %f\n", tiempo);
 	  tiempo += step(P,U,Fp,Fm);
 	  radio = radioChoque(P,radios,rho, dist,posiciones,length);
 	}
@@ -66,7 +67,7 @@ double step(physics_grid *P, U_grid *U, F_grid *Fp, F_grid *Fm){
  * Actualiza los parametros del physics_grid con base en los valores del U_grid
  */
 void actualizarP(physics_grid *P, U_grid *U){
-    int val=0;
+        int val=0;
 	int x;
 	int y;
 	int z;
@@ -83,9 +84,7 @@ void actualizarP(physics_grid *P, U_grid *U){
 	  for (y=0;y<P->N_y;y++){
 	    for (x=0;x<P->N_x;x++){
 	      pos = posi(x,y,z,P->N_x,P->N_y);
-	      for (i=0;i<5;i++){
-		u[i] = U->U[i*P->N_cells+pos];
-	      }
+	      Ucelda(pos,U,u);
 	      p = presion(u);
 	      P->P[val*P->N_cells+pos] = p;
 	    }
@@ -181,11 +180,9 @@ void actualizarF(U_grid *U, F_grid *Fp, F_grid *Fm){
 
 	      eje = 1; // Fy
 	      pos = posi(x,y+1,z,U->N_x,U->N_y); // Avanza en y
-	      //u_sig = {U->U[0*U->N_cells+pos], U->U[1*U->N_cells+pos], U->U[2*U->N_cells+pos], U->U[3*U->N_cells+pos], U->U[4*U->N_cells+pos]};
 	      Ucelda(pos, U,u_sig);
 
 	      pos = posi(x,y-1,z,U->N_x,U->N_y); // Retrocede en y
-	      //u_ant = {U->U[0*U->N_cells+pos], U->U[1*U->N_cells+pos], U->U[2*U->N_cells+pos], U->U[3*U->N_cells+pos], U->U[4*U->N_cells+pos]};
 	      Ucelda(pos, U,u_ant);
 
 	      for (i=0;i<5;i++){ // Promedio backward y forward
@@ -284,7 +281,7 @@ double radioChoque(physics_grid *P, double *radios, double *rho, double *dist, i
 	  exit(0);
 	}
 
-	perfilRadial(P,radios,posiciones,length,rho,pres,dist);
+	perfilRadial(P,radios,posiciones,length,rho,pres);
 
 	dermax = 0;
 	der = 0;
@@ -397,7 +394,7 @@ double presion(double *u_cell){
 /**
  * Evalua y produce una lista de promedio radial de densidad y presion
  */
-void perfilRadial(physics_grid *P, double *radios, int *posiciones, int length, double *dens, double *pres, double *dist){
+void perfilRadial(physics_grid *P, double *radios, int *posiciones, int length, double *dens, double *pres){
 	int i, j, pos;
 	double dens_m, pres_m, *dens_ord, *pres_ord;
 

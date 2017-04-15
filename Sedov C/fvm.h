@@ -19,7 +19,7 @@ double vmax(physics_grid *P, U_grid *U);
 double dt(physics_grid *P, U_grid *U);
 void propiedad(physics_grid *P, int propiedad, double *prop);
 double presion(double *u_cell);
-void perfilRadial(physics_grid *P, double *radios, int *posiciones, int length, double *dens, double *pres, double *dist);
+void perfilRadial(physics_grid *P, double *radios, int *posiciones, int length, double *dens, double *pres);
 void Ucelda(int pos, U_grid* U_act, double* u);
 
 #endif /* FVM_H_ */
