@@ -1,23 +1,27 @@
 CC = gcc
 CC_OPTIONS =   -O2 -Wall 
-EXEC = euler.x
+EXEC_sed = sedov.x
 LIBS = -lm 
 
-OBJS = struct.o init.o io.o main.o fvm.o space.o
-INCL = Makefile struct.h io.h init.h fvm.h space.h
+OBJS_sed = struct.o init.o io.o main.o fvm.o space.o
+INCL_sed = struct.h io.h init.h fvm.h space.h
+INTER_sed = sedov.dat tiempo.dat
+GRAPH_sed = graphsedov.py
+OUTS_sed = prom_rho.png
 
-
-all: $(EXEC)
+all: $(OBJS_sed)
 
 .c.o:
 	$(CC) $(CC_OPTIONS) -c $<
 
 plotsedov:
+	python $(GRAPH_sed)
 
 sedov:
-	./$(EXEC)
+	./$(EXEC_sed)
 
-$(EXEC):$(OBJS)
-	$(CC) $(OBJS) $(LIBS) -o $(EXEC)
+exec: $(OBJS_sed)
+	$(CC) $(OBJS_sed) $(LIBS) -o $(EXEC_sed)
+
 clean:
-	rm -f $(OBJS) *~ core* ${EXEC}
+	rm -f $(OBJS_sed) *~ core* ${EXEC_sed} data/${INTER_sed}
