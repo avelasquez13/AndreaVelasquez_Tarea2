@@ -72,7 +72,6 @@ void actualizarP(physics_grid *P, U_grid *U){
 	int y;
 	int z;
 	int pos;
-	int i;
 	double p;
 	double u[5];
 	for (pos=0;pos<P->N_cells;pos++){ // Densidad
