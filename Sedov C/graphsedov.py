@@ -19,9 +19,9 @@ while i<len(r):
     i+=1
 
 
-plt.plot(r, rho_10, label = '$t=%d$'%t_10)
-plt.plot(r, rho_60, label = '$t=%d$'%t_60)
-plt.plot(r, rho_120, label = '$t=%d$'%t_120)
+plt.plot(r, rho_10, label = r'$t=%d\mathrm{s}$'%t_10, color='yellow')
+plt.plot(r, rho_60, label = r'$t=%d\mathrm{s}$'%t_60, color='orange')
+plt.plot(r, rho_120, label = r'$t=%d\mathrm{s}$'%t_120, color='r')
 plt.xlabel(r'$r\ \mathrm{(m)}$')
 plt.ylabel(r'$\rho\ $'+r'$\mathrm{(\frac{kg}{m^3})}$')
 plt.title(r'$\mathrm{Densidad\ radial\ promedio}$')
