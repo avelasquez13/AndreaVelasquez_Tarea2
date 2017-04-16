@@ -16,6 +16,7 @@ while i<len(r):
         rho_10 = np.delete(rho_10, i)
         rho_60 = np.delete(rho_60, i)
         rho_120 = np.delete(rho_120, i)
+	i-=1
     i+=1
 
 
