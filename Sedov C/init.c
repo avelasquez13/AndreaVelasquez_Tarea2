@@ -62,24 +62,24 @@ F_grid * create_F_grid(void){
   return G;
 }
 
-double* create_listNdoubles(physics_grid *P){
+double* create_listNdoubles(int npoints){
 	double *G;
-	  if(!(G = malloc(P->N_cells*sizeof(FLOAT)))){
+	  if(!(G = malloc(npoints*sizeof(FLOAT)))){
 	    fprintf(stderr, "Problem with F allocation");
 	    exit(1);
 	  }
-	  init_to_zero(G, P->N_cells);
+	  init_to_zero(G, npoints);
 	  return G;
 }
-int* create_listNints(physics_grid *P){
+int* create_listNints(int npoints){
 	int *G;
-	  if(!(G = malloc(P->N_cells*sizeof(int)))){
+	  if(!(G = malloc(npoints*sizeof(int)))){
 	    fprintf(stderr, "Problem with F allocation");
 	    exit(1);
 	  }
 
 	  int i;
-	  for(i=0;i<P->N_cells;i++){
+	  for(i=0;i<npoints;i++){
 	    G[i] = 0;
 	  }
 	  return G;
@@ -90,7 +90,7 @@ void init_problem(physics_grid *P, U_grid *U, F_grid *F_p, F_grid *F_m){
   
   P->L_x = 256.0;
   P->L_y = 256.0;
-  P->L_z = 256.0;    
+  P->L_z = 256.0;
   P->delta_x = 2.0;
   P->delta_y = 2.0;
   P->delta_z = 2.0;
@@ -140,42 +140,21 @@ void init_problem(physics_grid *P, U_grid *U, F_grid *F_p, F_grid *F_m){
 }
 
 /**
- * Inicializa la lista de radios de las celdas y la lista de posiciones ordenada por radio ascendente
+ * Inicializa la lista de radios posibles para las celdas. estos son los radios que sean raiz de todos los enteros entre 0 y Nx^2+Ny^2+Nz^2
  */
-int init_radios(physics_grid *P, double *radios, double *dist, double *rho, int *posiciones){
-  int i, x, y, z, pos,length;
-  double rad_cuadrados;
-
-  for (z=0;z<P->N_z;z++){ // Guarda radio para cada posicion
-    for (y=0;y<P->N_y;y++){
-      for (x=0;x<P->N_x;x++){
-    	  pos = posi(x,y,z, P->N_x,P->N_y);
-    	  posiciones[pos] = pos;
-    	  rad_cuadrados = pow(P->delta_x*(x - P->N_x/2),2) + pow(P->delta_y*(y - P->N_y/2),2) + pow(P->delta_z*(z - P->N_z/2),2);
-    	 radios[pos] = sqrt(rad_cuadrados);
-      }
-    }
-  }
-  ordenarPorRadios(radios, posiciones, P->N_cells);
-
-  pos = 1;
-  dist [0] = radios[0];
-  length = 1;
-  for (i=1;i<P->N_cells/8;i++){ // Recorre dist para llenarlo
-    while (dist[i-1] == radios[pos-1] && pos<P->N_cells){ // Busca cambio en radios
-      pos++;
-    }
-    if (pos<P->N_cells){ // Si sigue en una celda valida asigna dist
-      dist[i] = radios[pos-1];
-      length = i+1;
-    }
-    else{ // Ya recorrio radios, los valores que quedan de la lista dist sobran
-      dist[i] = -1;
-    }
-  }
-  return length;
+void init_radios(physics_grid *P, double *radios, double *rho_avg, int *contador, int length){
+	int i;
+	for (i = 0; i < length; ++i) {
+		radios[i]=sqrt(i);
+	}
 }
 
+/**
+ * Calcula la longitud del arreglo de radios como el cuadrado maximo de la distancia (ej 64^2+64^2+64^2)
+ */
+int length_radios(physics_grid *P){
+	return pow((P->N_x/2),2)+pow((P->N_y/2),2)+pow((P->N_z/2),2)+1;
+}
 /**
  * Inicializa las condiciones iniciales de la explosion
  */
@@ -191,24 +170,3 @@ void init_conditions(U_grid *U, physics_grid *P){
 	U->U[4*ncells+pos]=1.177*pow(10,10);
 }
 
-/**
- * Ordena los radios y las posiciones por radio ascendente. Utiliza el algoritmo bubble sort.
- */
-void ordenarPorRadios(double *radios, int *posiciones, int length){
-	int i,j;
-	double rad,pos;
-	for (i = 1; i < length; ++i) {
-		for (j = 0; j < length-i; ++j) {
-		    printf("Pos ord: %d,%d\n",i,j);
-			rad=radios[j];
-			pos=posiciones[j];
-			if(rad>radios[j+1]){
-						radios[j]=radios[j+1];
-						posiciones[j]=posiciones[j+1];
-						radios[j+1]=rad;
-						posiciones[j+1]=pos;
-				//TODO arreglar esto
-					}
-		}
-	}
-}
