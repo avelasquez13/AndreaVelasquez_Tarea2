@@ -6,14 +6,14 @@
 
 
 int main(int argc, char **argv){
-  fprintf(stdout, "Sedov: \n");
+  fprintf(stdout, "---Sedov--- \n");
   physics_grid * P_state;
   U_grid * U_state;
   F_grid  *Fp, *Fm;
   double *radios; // radios[i] = radio de la celda en posiciones[i]
-  double *dist, *rho; // Guardan valores de distancia (sin repetir) y promedio de rho a esa distancia
+  double *rho; // Guarda valores de rho promedio a un radio
+  int *contador;// numero de celdas con ese radio
   double tiempo = 0;
-  int *posiciones; // Guarda las posiciones ordenadas ascendentemente por radio
   int length; // Tamaño del SET de radios
   int i;
 
@@ -22,28 +22,31 @@ int main(int argc, char **argv){
   Fp = create_F_grid();
   Fm = create_F_grid();
   init_problem(P_state, U_state, Fp, Fm);
-
-  radios=create_listNdoubles(P_state);
-  dist=create_listNdoubles(P_state);
-  rho=create_listNdoubles(P_state);
-  posiciones=create_listNints(P_state);
   printf("Size arrays: %d\n",P_state->N_cells);
-  length = init_radios(P_state, radios, dist, rho, posiciones);
-  /*
+
+	length = length_radios(P_state);
+	radios=create_listNdoubles(length);
+	rho=create_listNdoubles(length);
+	contador=create_listNints(length);
+
+  init_radios(P_state, radios, rho, contador, length);
+  printf("Size radios: %d\n",length);
+
   init_conditions(U_state,P_state);
   fprintf(stdout, "Inicializo \n");
-  print_list(dist,length);//Imprime radios
+  print_list(radios,length);//Imprime radios
 
   //Imprime los valores de rho para las posiciones de la onda de choque 10m,60m, y 120m
   double pos[3]={10,60,120};
   for (i=0;i<3;i++){
-	  tiempo += evolve(P_state, U_state, Fp, Fm, pos[i], radios, rho, dist, posiciones, length);
+	  tiempo += evolve(P_state, U_state, Fp, Fm, pos[i], radios, rho, contador, length);
 	  print_list(rho,length);
 	  print_time(tiempo);
+	  fprintf(stdout, "Evoluciono %fm \n", pos[i]);
   }
 
 
   print_L(P_state); // Supongo que esta linea sobra
-*/
+
   return 0;
 }

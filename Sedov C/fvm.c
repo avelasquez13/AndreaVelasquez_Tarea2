@@ -15,16 +15,16 @@
  * Calcula la evolución de la onda de choque hasta un r_final que entra por parametro
  *
  */
-double evolve(physics_grid *P, U_grid *U, F_grid *Fp, F_grid *Fm, double r_final, double *radios, double *rho, double *dist, int *posiciones, int length){
+double evolve(physics_grid *P, U_grid *U, F_grid *Fp, F_grid *Fm, double r_final, double *radios, double *rho, int *contador, int length){
 	double radio=0;
 	double tiempo=0;
-
+	//fprintf(stdout, "Tiempo = %f\n", tiempo);
 	actualizarP(P,U);
-	radio = radioChoque(P,radios,rho, dist,posiciones,length);
+	radio = radioChoque(P, radios, rho, contador, length);
 	while(radio<r_final){
-	  fprintf(stdout, "Tiempo = %f\n", tiempo);
+	  fprintf(stdout, "Tiempo = %f Radio=%f\n", tiempo, radio);
 	  tiempo += step(P,U,Fp,Fm);
-	  radio = radioChoque(P,radios,rho, dist,posiciones,length);
+	  radio = radioChoque(P, radios, rho, contador, length);
 	}
 	return tiempo;
 }
@@ -270,30 +270,36 @@ void actualizarF(U_grid *U, F_grid *Fp, F_grid *Fm){
 /**
  * Encuentra la posición de la onda de choque
  */
-double radioChoque(physics_grid *P, double *radios, double *rho, double *dist, int *posiciones, int length){
-	double r, der, dermax, *pres;
-	int i;
-	int max=0;
+double radioChoque(physics_grid *P, double *radios, double *rho, int *contador, int length){
+	double r, max, *pres;
+	int i, pos_max;
 
-	if(!(pres = malloc((P->N_cells/8)*sizeof(double)))){
+	if(!(pres = malloc(length*sizeof(double)))){
 	  fprintf(stderr, "Problem with data allocation\n");fflush(stdout);
 	  exit(0);
 	}
 
-	perfilRadial(P,radios,posiciones,length,rho,pres);
+	perfilRadial(P,radios,contador,length,rho,pres);
 
-	dermax = 0;
-	der = 0;
-	for (i=1;i<length;i++){
-	  der = (pres[i] - pres[i-1])/(dist[i] - dist[i-1]);
-	  if (dermax<der){
-	    dermax = der;
-	    max = i;
+	pos_max = 0;
+	max = 0;
+	for (i=0;i<length;i++){
+	  if(pres[i]>max){
+		  max=pres[i];
+		  pos_max=i;
 	  }
 	}
 	free(pres);
+	r = radios[pos_max];
 
-	r = dist[max];
+	//Alternativa para encontra la discontinuidad
+	/*i=0;
+	while(rho[i]!=1.177){
+		//printf("rho: %f\n",rho[i]);
+		i++;
+	}
+	r=radios[i];*/
+
 	return r;
 }
 
@@ -393,48 +399,25 @@ double presion(double *u_cell){
 /**
  * Evalua y produce una lista de promedio radial de densidad y presion
  */
-void perfilRadial(physics_grid *P, double *radios, int *posiciones, int length, double *dens, double *pres){
-	int i, j, pos;
-	double dens_m, pres_m, *dens_ord, *pres_ord;
-
-	int nCells=P->N_cells;
-
-	if(!(dens_ord = malloc(nCells*sizeof(double)))){
-	  fprintf(stderr, "Problem with data allocation\n");fflush(stdout);
-	  exit(0);
+void perfilRadial(physics_grid *P, double *radios, int *contador, int length, double *rho, double *pres){
+	int i;
+	for (i = 0; i < P->N_cells; ++i) {
+		int index=radioSq(P, i);
+		//printf("Radio celda #%d: %f\n",i,radios[index]);
+		rho[index]+=P->P[i];
+		pres[index]+=P->P[1*P->N_cells+i];
+		contador[index]++;
 	}
-	if(!(pres_ord = malloc(nCells*sizeof(double)))){
-	  fprintf(stderr, "Problem with data allocation\n");fflush(stdout);
-	  exit(0);
+	for (i = 0; i < length; ++i) {
+		if(contador[i]==0){//los radios que no existen se les asigna -1 para eliminarlos en python
+			rho[i]=-1;
+			pres[i]=-1;
+		}
+		else{//Encuentra el rho promedio para todos los radios que existen
+			rho[i]=rho[i]/contador[i];
+			pres[i]=pres[i]/contador[i];
+		}
 	}
-	
-	for (i=0;i<nCells;i++){ // Lista de dens y pres ordenadas por radio
-	  dens_ord[i] = P->P[0*nCells+posiciones[i]];
-	  pres_ord[i] = P->P[1*nCells+posiciones[i]];
-	}
-
-	pos = 0;
-	for (j=0;j<length;j++){ // Listas de promedios radiales
-	  dens_m = pres_m = 0;
-	  if (pos<nCells){
-	    dens_m += dens_ord[pos];
-	    pres_m += pres_ord[pos];
-	  }
-
-	  i = 1;
-	  while ((pos + 1)<nCells && radios[pos] == radios[pos+1]){
-	    pos++;
-	    i++;
-	    dens_m += dens_ord[pos];
-	    pres_m += pres_ord[pos];
-	  }
-
-	  dens[j] = dens_m/i;
-	  pres[j] = pres_m/i;
-	  pos++;
-	}
-	free(dens_ord);
-	free(pres_ord);
 }
 
 /**
