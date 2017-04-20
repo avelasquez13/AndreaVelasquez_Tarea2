@@ -87,9 +87,9 @@ if sys.argv[1] == "shock":
 		var = abs(fP(p_c))
 		while (var > 1*(10.0**(-10))):
 			p_c_antes = p_c
-                    	p_c = p_c_antes - fP(p_c_antes)/fP_prima(p_c_antes)
-                    	var = abs(fP(p_c))
-                    	n += 1
+			p_c = p_c_antes - fP(p_c_antes)/fP_prima(p_c_antes)
+			var = abs(fP(p_c))
+			n += 1
 		
 	    	u_c = 0.5*(u_l + u_r) + 0.5*(fR(p_c) - fL(p_c))
 	    	rho_c_l = rho_l*((p_c/P_l)**(1/gamma))
