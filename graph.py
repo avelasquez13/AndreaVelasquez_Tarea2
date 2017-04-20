@@ -124,19 +124,19 @@ if sys.argv[1] == "shock":
 		return RHO, U, PR
 
 	def Reg(x,t,rho_c_l,rho_c_r,u_c,p_c,S_h_l,S_t_l,S_r): # Devuelve rho, u, P
-	    if (x - xdiscont < S_h_l*t): # L
-		return rho_l, u_l, P_l
-	    elif (x - xdiscont < S_t_l*t): # fan
-		rho_star = rho_l*((2/(gamma + 1)) + (u_l - (x - xdiscont)/t)*((gamma - 1)/(a_l*(gamma + 1))))**(2/(gamma - 1))
-		u_star = (2/(gamma + 1))*(a_l + 0.5*u_l*(gamma - 1) + (x - xdiscont)/t)
-		p_star = P_l*((rho_star/rho_l)**gamma)
-		return rho_star, u_star, p_star
-	    elif (x - xdiscont < u_c*t): # L*
-		return rho_c_l, u_c, p_c
-	    elif (x - xdiscont < S_r*t): # R*
-		return rho_c_r, u_c, p_c
-	    else: # R
-		return rho_r, u_r, P_r
+		if (x - xdiscont < S_h_l*t): # L
+			return rho_l, u_l, P_l
+		elif (x - xdiscont < S_t_l*t): # fan
+			rho_star = rho_l*((2/(gamma + 1)) + (u_l - (x - xdiscont)/t)*((gamma - 1)/(a_l*(gamma + 1))))**(2/(gamma - 1))
+			u_star = (2/(gamma + 1))*(a_l + 0.5*u_l*(gamma - 1) + (x - xdiscont)/t)
+			p_star = P_l*((rho_star/rho_l)**gamma)
+			return rho_star, u_star, p_star
+		elif (x - xdiscont < u_c*t): # L*
+			return rho_c_l, u_c, p_c
+		elif (x - xdiscont < S_r*t): # R*
+			return rho_c_r, u_c, p_c
+		else: # R
+			return rho_r, u_r, P_r
 	    
 	    
 	rho_r, u_r, P_r = SolucionExacta()
