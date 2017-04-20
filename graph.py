@@ -82,7 +82,7 @@ if sys.argv[1] == "shock":
 
 	def SolucionExacta():
 		p_c_antes = 0.3
-	    	n = 0
+		n = 0
 	    	p_c = p_c_antes - fP(p_c_antes)/fP_prima(p_c_antes)
 	    	var = abs(fP(p_c))
 	    
