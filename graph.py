@@ -108,19 +108,19 @@ if sys.argv[1] == "shock":
 		PR = x.copy()
 		
 		der_u_max = 0
-	    	while (ud < 0.9):
+		while (ud < 0.9):
 			t += delta_t
-		
-                   	for i in range(len(x)):
+	
+			for i in range(len(x)):
 				r,u,p = Reg(x[i],t,rho_c_l,rho_c_r,u_c,p_c,S_h_l,S_t_l,S_r)
-                            	RHO[i] = r
-                            	U[i] = u
-                            	PR[i] = p
-                            	der_u = abs(U[i] - U[i-1])
-                            	if (der_u_max < der_u):
+				RHO[i] = r
+				U[i] = u
+				PR[i] = p
+				der_u = abs(U[i] - U[i-1])
+				if (der_u_max < der_u):
 					ud = x[i]
-                                    	der_u_max = der_u
-			    	der_u_max = 0    
+					der_u_max = der_u
+				der_u_max = 0
 		return RHO, U, PR
 
 	def Reg(x,t,rho_c_l,rho_c_r,u_c,p_c,S_h_l,S_t_l,S_r): # Devuelve rho, u, P
