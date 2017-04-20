@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "estructuras.h"
 #include "lax_wendoff.h"
 #include "io.h"
@@ -13,7 +14,7 @@ int I;
 
 int main(int argc, char **argv){
 
-  if argv[1] == "sedov"{
+  if(strcmp(argv[1], "sedov") == 0){
       fprintf(stdout, "---Sedov--- \n");
       physics_grid * P_state;
       U_grid * U_state;
@@ -61,7 +62,7 @@ int main(int argc, char **argv){
 
 
 
-  if argv[1] == "shock"{
+  if(strcmp(argv[1], "shock") == 0){
 
       I=1/dx+1;
       u* U=u_malloc();

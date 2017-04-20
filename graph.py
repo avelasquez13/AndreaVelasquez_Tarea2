@@ -13,13 +13,13 @@ if sys.argv[1] == "sedov":
 
 	i=0
 	while i<len(r):
-    	if rho_10[i] == -1:
-        	r = np.delete(r, i)
-        	rho_10 = np.delete(rho_10, i)
-        	rho_60 = np.delete(rho_60, i)
-        	rho_120 = np.delete(rho_120, i)
-		i-=1
-    	i+=1
+    		if rho_10[i] == -1:
+        		r = np.delete(r, i)
+        		rho_10 = np.delete(rho_10, i)
+        		rho_60 = np.delete(rho_60, i)
+        		rho_120 = np.delete(rho_120, i)
+			i-=1
+    		i+=1
 
 
 	plt.plot(r, rho_10, label = r'$t=%d\mathrm{s}$'%t_10, color='yellow')

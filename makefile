@@ -3,7 +3,7 @@ CC_OPTIONS =   -O2 -Wall
 EXEC = euler.x
 LIBS = -lm 
 
-OBJS = struct.o init.o io_sed.o main.o fvm.o space.o estructuras.o io.o lax_wendoff.o
+OBJS = main.o estructuras.o io.o lax_wendoff.o struct.o init.o io_sed.o fvm.o space.o 
 INTER = sedov.dat tiempo.dat shock.dat
 GRAPH = graph.py
 

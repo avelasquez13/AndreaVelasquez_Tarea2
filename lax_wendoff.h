@@ -10,7 +10,7 @@
 
 u* init(void);
 void F(f* F_n, u* U_n);
-u* step(u* U_n, f* F_n, double dt);
+u* step_lw(u* U_n, f* F_n, double dt);
 double u_max(u* U);
 u* lax_wendoff(double tmax, int pI);
 f* f_malloc(void);
