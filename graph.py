@@ -95,19 +95,19 @@ if sys.argv[1] == "shock":
 		rho_c_l = rho_l*((p_c/P_l)**(1/gamma))
 		rho_c_r = rho_r*((p_c/P_r) + (gamma - 1)/(gamma + 1))/((gamma - 1)*p_c/(P_r*(gamma + 1)) + 1)
 		a_c_l = a_l*((p_c/P_l)**(0.5*(gamma - 1)/gamma))
-	    	S_h_l = u_l - a_l
-	    	S_t_l = u_c - a_c_l
-	    	S_r = u_r + a_r*np.sqrt(0.5*(gamma + 1)*p_c/(gamma*P_r) + 0.5*(gamma - 1)/gamma)
-
-	    	x = np.linspace(0,1,100)
-	    	t = 0.21
-	    	delta_t = 0.0001
-	    	ud = 0.5
-	    	RHO = x.copy()
-	    	U = x.copy()
-	    	PR = x.copy()
-
-	    	der_u_max = 0
+		S_h_l = u_l - a_l
+		S_t_l = u_c - a_c_l	
+		S_r = u_r + a_r*np.sqrt(0.5*(gamma + 1)*p_c/(gamma*P_r) + 0.5*(gamma - 1)/gamma)
+	
+		x = np.linspace(0,1,100)
+		t = 0.21
+		delta_t = 0.0001
+		ud = 0.5
+		RHO = x.copy()
+		U = x.copy()
+		PR = x.copy()
+		
+		der_u_max = 0
 	    	while (ud < 0.9):
 			t += delta_t
 		
