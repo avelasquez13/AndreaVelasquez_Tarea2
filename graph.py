@@ -92,9 +92,9 @@ if sys.argv[1] == "shock":
 			n += 1
 
 		u_c = 0.5*(u_l + u_r) + 0.5*(fR(p_c) - fL(p_c))
-	    	rho_c_l = rho_l*((p_c/P_l)**(1/gamma))
-	    	rho_c_r = rho_r*((p_c/P_r) + (gamma - 1)/(gamma + 1))/((gamma - 1)*p_c/(P_r*(gamma + 1)) + 1)
-	    	a_c_l = a_l*((p_c/P_l)**(0.5*(gamma - 1)/gamma))
+		rho_c_l = rho_l*((p_c/P_l)**(1/gamma))
+		rho_c_r = rho_r*((p_c/P_r) + (gamma - 1)/(gamma + 1))/((gamma - 1)*p_c/(P_r*(gamma + 1)) + 1)
+		a_c_l = a_l*((p_c/P_l)**(0.5*(gamma - 1)/gamma))
 	    	S_h_l = u_l - a_l
 	    	S_t_l = u_c - a_c_l
 	    	S_r = u_r + a_r*np.sqrt(0.5*(gamma + 1)*p_c/(gamma*P_r) + 0.5*(gamma - 1)/gamma)
