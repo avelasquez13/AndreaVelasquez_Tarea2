@@ -6,7 +6,7 @@
 #include "io.h"
 #include "struct.h"
 #include "init.h"
-#include "io.h"
+#include "io_sed.h"
 #include "fvm.h"
 
 
