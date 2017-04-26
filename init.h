@@ -1,3 +1,4 @@
+void init_to_zero(FLOAT *p, int n_points);
 void init_problem(physics_grid *P, U_grid *U, F_grid *F_p, F_grid *F_m);
 physics_grid * create_physics_grid(void);
 U_grid * create_U_grid(void);
