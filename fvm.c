@@ -10,6 +10,7 @@
 #include "struct.h"
 #include "fvm.h"
 #include "space.h"
+#include "init.h"
 
 /**
  * Calcula la evolución de la onda de choque hasta un r_final que entra por parametro
@@ -274,10 +275,7 @@ double radioChoque(physics_grid *P, double *radios, double *rho, int *contador, 
 	double r, max, *pres;
 	int i, pos_max;
 
-	if(!(pres = malloc(length*sizeof(double)))){
-	  fprintf(stderr, "Problem with data allocation\n");fflush(stdout);
-	  exit(0);
-	}
+	pres = create_listNdoubles(length);
 
 	perfilRadial(P,radios,contador,length,rho,pres);
 
@@ -400,13 +398,14 @@ double presion(double *u_cell){
  * Evalua y produce una lista de promedio radial de densidad y presion
  */
 void perfilRadial(physics_grid *P, double *radios, int *contador, int length, double *rho, double *pres){
-	int i;
+	int i, index;
+	init_to_zero(rho,length);
+	
 	for (i = 0; i < P->N_cells; ++i) {
-		int index=radioSq(P, i);
+		index=radioSq(P, i);
 		//printf("Radio celda #%d: %f\n",i,radios[index]);
 		rho[index]+=P->P[i];
 		pres[index]+=P->P[1*P->N_cells+i];
-		contador[index]++;
 	}
 	for (i = 0; i < length; ++i) {
 		if(contador[i]==0){//los radios que no existen se les asigna -1 para eliminarlos en python

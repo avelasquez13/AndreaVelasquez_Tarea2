@@ -143,9 +143,13 @@ void init_problem(physics_grid *P, U_grid *U, F_grid *F_p, F_grid *F_m){
  * Inicializa la lista de radios posibles para las celdas. estos son los radios que sean raiz de todos los enteros entre 0 y Nx^2+Ny^2+Nz^2
  */
 void init_radios(physics_grid *P, double *radios, double *rho_avg, int *contador, int length){
-	int i;
+	int i, index;
 	for (i = 0; i < length; ++i) {
 		radios[i]=sqrt(i);
+	}
+	for (i = 0; i < P->N_cells; ++i) {
+		index=radioSq(P, i);
+		contador[index]++;
 	}
 }
 
