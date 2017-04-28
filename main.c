@@ -32,7 +32,7 @@ int main(int argc, char **argv){
       Fm = create_F_grid();
       init_problem(P_state, U_state, Fp, Fm);
       printf("Size arrays: %d\n",P_state->N_cells);
-      
+
 	length = length_radios(P_state);
 	radios=create_listNdoubles(length);
 	rho=create_listNdoubles(length);
@@ -46,7 +46,7 @@ int main(int argc, char **argv){
       print_list(radios,length);//Imprime radios
 
       //Imprime los valores de rho para las posiciones de la onda de choque 10m,60m, y 120m
-      double pos[3]={10,60,120};
+      double pos[3]={5,8,13};
       for (i=0;i<3;i++){
 	  tiempo += evolve(P_state, U_state, Fp, Fm, pos[i], radios, rho, contador, length);
 	  print_list(rho,length);

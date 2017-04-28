@@ -18,7 +18,7 @@ physics_grid * create_physics_grid(void){
   if(!(G = malloc(sizeof(physics_grid)))){
     fprintf(stderr, "Problem with data allocation\n");fflush(stdout);
     exit(0);
-  } 
+  }
   G->L_x=0.0;
   G->L_y=0.0;
   G->L_z=0.0;
@@ -39,7 +39,7 @@ U_grid * create_U_grid(void){
   if(!(G = malloc(sizeof(U_grid)))){
     fprintf(stderr, "Problem with data allocation\n");fflush(stdout);
     exit(0);
-  } 
+  }
   G->N_x=0.0;
   G->N_y=0.0;
   G->N_z=0.0;
@@ -53,7 +53,7 @@ F_grid * create_F_grid(void){
   if(!(G = malloc(sizeof(F_grid)))){
     fprintf(stderr, "Problem with data allocation\n");fflush(stdout);
     exit(0);
-  } 
+  }
   G->N_x=0.0;
   G->N_y=0.0;
   G->N_z=0.0;
@@ -87,7 +87,7 @@ int* create_listNints(int npoints){
 
 
 void init_problem(physics_grid *P, U_grid *U, F_grid *F_p, F_grid *F_m){
-  
+
   P->L_x = 256.0;
   P->L_y = 256.0;
   P->L_z = 256.0;
@@ -98,12 +98,12 @@ void init_problem(physics_grid *P, U_grid *U, F_grid *F_p, F_grid *F_m){
   P->N_y = (int)(P->L_y/P->delta_y);
   P->N_z = (int)(P->L_z/P->delta_z);
   P->N_cells = P->N_x * P->N_y * P->N_z;
-  
+
   U->N_x = P->N_x;
   U->N_y = P->N_y;
   U->N_z = P->N_z;
   U->N_cells = P->N_cells;
-  
+
   F_p->N_x = P->N_x;
   F_p->N_y = P->N_y;
   F_p->N_z = P->N_z;
@@ -119,13 +119,13 @@ void init_problem(physics_grid *P, U_grid *U, F_grid *F_p, F_grid *F_m){
     exit(1);
   }
   init_to_zero(P->P, P->N_cells * (NDIM +2));
-  
+
   if(!(U->U = malloc(U->N_cells * (NDIM +2) * sizeof(FLOAT)))){
     fprintf(stderr, "Problem with U_1 allocation");
     exit(1);
   }
   init_to_zero(U->U, U->N_cells * (NDIM +2));
-  
+
   if(!(F_p->F = malloc(F_p->N_cells * (NDIM) * (NDIM + 2) * sizeof(FLOAT)))){
     fprintf(stderr, "Problem with F allocation");
     exit(1);
@@ -167,10 +167,9 @@ void init_conditions(U_grid *U, physics_grid *P){
 	int i;
 	int ncells=U->N_cells;
 	for (i = 0; i < ncells; ++i) {
-		U->U[0*ncells+i]=1.177;
-		U->U[4*ncells+i]=101325/0.4;
+		U->U[0*ncells+i]=1;
+		U->U[4*ncells+i]=1;
 	}
 	int pos=posi(P->N_x/2, P->N_y/2, P->N_z/2, P->N_x, P->N_y);
-	U->U[4*ncells+pos]=1.177*pow(10,10);
+	U->U[4*ncells+pos]=pow(10,10);
 }
-

@@ -13,7 +13,7 @@
 #include "init.h"
 
 /**
- * Calcula la evolución de la onda de choque hasta un r_final que entra por parametro
+ * Calcula la evoluciï¿½n de la onda de choque hasta un r_final que entra por parametro
  *
  */
 double evolve(physics_grid *P, U_grid *U, F_grid *Fp, F_grid *Fm, double r_final, double *radios, double *rho, int *contador, int length){
@@ -31,7 +31,7 @@ double evolve(physics_grid *P, U_grid *U, F_grid *Fp, F_grid *Fm, double r_final
 }
 
 /**
- *Calcula una iteración del problema (avanza un dt), devuelve el tiempo de avance
+ *Calcula una iteraciï¿½n del problema (avanza un dt), devuelve el tiempo de avance
  */
 double step(physics_grid *P, U_grid *U, F_grid *Fp, F_grid *Fm){
 	int x, y, z, eje, val, pos, posf;
@@ -47,15 +47,15 @@ double step(physics_grid *P, U_grid *U, F_grid *Fp, F_grid *Fm){
 
 			eje = 0;
 			posf = posF(x,y,z,eje,val,U->N_x,U->N_y,U->N_z);
-			U->U[val*U->N_cells+pos] += (Fm->F[posf] - Fp->F[posf])*delta_t/P->delta_x;
+			U->U[val*U->N_cells+pos] += (Fp->F[posf] - Fm->F[posf])*delta_t/P->delta_x;
 
 			eje = 1;
 			posf = posF(x,y,z,eje,val,U->N_x,U->N_y,U->N_z);
-			U->U[val*U->N_cells+pos] += (Fm->F[posf] - Fp->F[posf])*delta_t/P->delta_y;
+			U->U[val*U->N_cells+pos] += (Fp->F[posf] - Fm->F[posf])*delta_t/P->delta_y;
 
 			eje = 2;
 			posf = posF(x,y,z,eje,val,U->N_x,U->N_y,U->N_z);
-			U->U[val*U->N_cells+pos] += (Fm->F[posf] - Fp->F[posf])*delta_t/P->delta_z;
+			U->U[val*U->N_cells+pos] += (Fp->F[posf] - Fm->F[posf])*delta_t/P->delta_z;
 	      }
 	    }
 	  }
@@ -134,7 +134,7 @@ void actualizarF(U_grid *U, F_grid *Fp, F_grid *Fm){
 
 	      pos = posi(x,y,z,U->N_x,U->N_y);
 	      Ucelda(pos, U,u_celda);
-	      
+
 	      eje = 0; // Fx
 	      pos = posi(x+1,y,z,U->N_x,U->N_y); // Avanza en x
 	      Ucelda(pos, U,u_sig);
@@ -172,7 +172,7 @@ void actualizarF(U_grid *U, F_grid *Fp, F_grid *Fm){
 	      posf = posF(x,y,z,eje,val,U->N_x,U->N_y,U->N_z);
 	      Fp->F[posf] = u_sig[1]*u_sig[2]/u_sig[0];
 	      Fm->F[posf] = u_ant[1]*u_ant[2]/u_ant[0];
-	      
+
 	      val = 3; // Fpmx 3
 	      posf = posF(x,y,z,eje,val,U->N_x,U->N_y,U->N_z);
 	      Fp->F[posf] = u_sig[1]*u_sig[3]/u_sig[0];
@@ -269,7 +269,7 @@ void actualizarF(U_grid *U, F_grid *Fp, F_grid *Fm){
 }
 
 /**
- * Encuentra la posición de la onda de choque
+ * Encuentra la posiciï¿½n de la onda de choque
  */
 double radioChoque(physics_grid *P, double *radios, double *rho, int *contador, int length){
 	double r, max, *pres;
@@ -279,7 +279,7 @@ double radioChoque(physics_grid *P, double *radios, double *rho, int *contador, 
 
 	perfilRadial(P,radios,contador,length,rho,pres);
 
-	pos_max = 0;
+	/*pos_max = 0;
 	max = 0;
 	for (i=0;i<length;i++){
 	  if(pres[i]>max){
@@ -289,20 +289,20 @@ double radioChoque(physics_grid *P, double *radios, double *rho, int *contador, 
 	}
 	free(pres);
 	r = radios[pos_max];
-
+*/
 	//Alternativa para encontra la discontinuidad
-	/*i=0;
-	while(rho[i]!=1.177){
+	i=0;
+	while(rho[i]!=1){
 		//printf("rho: %f\n",rho[i]);
 		i++;
 	}
-	r=radios[i];*/
+	r=radios[i];
 
 	return r;
 }
 
 /**
- * Actualiza los valores de entalpía
+ * Actualiza los valores de entalpï¿½a
  */
 void h(U_grid *U, double* h){
         int pos;
@@ -334,7 +334,7 @@ void cs(U_grid *U, double* cs){
 }
 
 /**
- * Encuentra el valor de (u, v, ó w)+cs máximo
+ * Encuentra el valor de (u, v, ï¿½ w)+cs mï¿½ximo
  */
 double vmax(physics_grid *P, U_grid *U){
         double vmax, vel, *cs_act;
@@ -366,6 +366,9 @@ double dt(physics_grid *P, U_grid *U){
 	double dt, vm;
 	vm = vmax(P,U);
 	dt = 0.5*(P->delta_x/vm);
+	if(dt<0.0000001){
+			return 0.0000001;
+	}
 	return dt;
 }
 
@@ -400,7 +403,7 @@ double presion(double *u_cell){
 void perfilRadial(physics_grid *P, double *radios, int *contador, int length, double *rho, double *pres){
 	int i, index;
 	init_to_zero(rho,length);
-	
+
 	for (i = 0; i < P->N_cells; ++i) {
 		index=radioSq(P, i);
 		//printf("Radio celda #%d: %f\n",i,radios[index]);

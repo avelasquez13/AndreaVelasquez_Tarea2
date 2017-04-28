@@ -10,7 +10,7 @@
 #include "space.h"
 #include <math.h>
 /**
- * Retorna la posición en el arreglo del que corresponde a las coordenadas (x,y,z)
+ * Retorna la posiciï¿½n en el arreglo del que corresponde a las coordenadas (x,y,z)
  * Primero se recorre x, luego y, luego z
  */
 int posi(int x, int y, int z, int Nx, int Ny){
@@ -35,11 +35,11 @@ void coord(int *coord, int pos, int Nx, int Ny){
 	coord[0] = (pos - Nx*Ny*coord[2] - Nx*coord[1]);*/
 
 
-	printf("coord ind %d: %d,%d,%d\n",pos,coord[0],coord[1],coord[2]);
+	//printf("coord ind %d: %d,%d,%d\n",pos,coord[0],coord[1],coord[2]);
 }
 
 /**
- * Retorna la posición en el arreglo de F que corresponde a las coordenadas (x,y,z) y el eje que entra por parametro
+ * Retorna la posiciï¿½n en el arreglo de F que corresponde a las coordenadas (x,y,z) y el eje que entra por parametro
  * @param eje=0 para Fx, eje=1 para Fy, eje=2 para Fz
  */
 int posF(int x, int y, int z, int eje, int valor, int Nx, int Ny, int Nz){
