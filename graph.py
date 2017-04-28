@@ -22,7 +22,7 @@ if sys.argv[1] == "sedov":
                 i+=1
 
 
-	plt.plot(r, rho_10, label = r'$t=%f\mathrm{s}$'%t_10, color='yellow')
+	plt.plot(r, rho_10, label = r'$t=%f\mathrm{s}$'%t_10, color='g')
 	plt.plot(r, rho_60, label = r'$t=%f\mathrm{s}$'%t_60, color='orange')
 	plt.plot(r, rho_120, label = r'$t=%f\mathrm{s}$'%t_120, color='r')
 	plt.xlabel(r'$r\ \mathrm{(m)}$')
