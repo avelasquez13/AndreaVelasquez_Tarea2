@@ -46,7 +46,7 @@ int main(int argc, char **argv){
       print_list(radios,length);//Imprime radios
 
       //Imprime los valores de rho para las posiciones de la onda de choque 10m,60m, y 120m
-      double pos[3]={5,10,60};
+      double pos[3]={10,60,120};
       for (i=0;i<3;i++){
 	  tiempo += evolve(P_state, U_state, Fp, Fm, pos[i], radios, rho, contador, length);
 	  print_list(rho,length);
