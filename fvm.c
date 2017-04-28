@@ -272,8 +272,8 @@ void actualizarF(U_grid *U, F_grid *Fp, F_grid *Fm){
  * Encuentra la posici�n de la onda de choque
  */
 double radioChoque(physics_grid *P, double *radios, double *rho, int *contador, int length){
-	double r, max, *pres;
-	int i, pos_max;
+	double r, /*max,*/ *pres;
+	int i/*, pos_max*/;
 
 	pres = create_listNdoubles(length);
 
